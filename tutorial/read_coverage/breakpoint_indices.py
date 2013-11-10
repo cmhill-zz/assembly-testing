@@ -2,6 +2,9 @@
 Input: an assembly fasta file and a set of unaligned reads in fasta format.
 Input: alpha, window size at the beginning of the unaligned reads.
 Output: a distribution over the indices of the assembly where errors are likely
+
+Example usage (from inside tutorials directory):
+python breakpoint_indices.py -a ../../data/influenza-A/influenza-A.assembly.fasta -u unaligned.txt --alpha 5
 """
 
 import sys
