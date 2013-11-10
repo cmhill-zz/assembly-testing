@@ -29,7 +29,34 @@ def readAssembly(assembly_file):
 	strippedString = assemblyString.strip().replace('\n','')
 	return strippedString
 
+#reads in a list of singletons from a FASTA file. Returns list of strings.
+def readSingletons(unaligned_file):
+	infile = open(unaligned_file,'r')
 
+	singletons=[]
+	currentSingleton=[]
+	singletonCount=0
+	for line in infile:
+		if line[0]==">":
+			singletonCount+=1
+			
+			#if the current singleton is not the empty list, join it and add it to the singletons list
+			if len(currentSingleton)!=0:
+				singletonString = "".join(currentSingleton)
+				strippedString = singletonString.strip().replace('\n','')
+				singletons.append(strippedString)
+			
+			currentSingleton=[]
+			continue
+		else:
+			currentSingleton.append(line)
+
+	#get last singleton, since there are no more header lines
+	singletonString = "".join(currentSingleton)
+	strippedString = singletonString.strip().replace('\n','')
+	singletons.append(strippedString)
+
+	return singletons
 
 
 def Main():
@@ -56,6 +83,16 @@ def Main():
 	assemblyString = readAssembly(options.assembly_file)
 
 	print 'Successfully read assembly of length %d' % len(assemblyString)
+
+	#read singletons
+	singletons = readSingletons(options.unaligned_file)
+
+	print 'Successfully read %d singletons' % len(singletons)
+
+	i=0
+	for singleton in singletons:
+		print 'Singleton '+str(i)+': \n\t'+singleton
+		i+=1
 
 if __name__=="__main__":
 	Main()
