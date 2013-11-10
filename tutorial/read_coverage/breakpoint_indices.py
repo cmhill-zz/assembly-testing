@@ -59,6 +59,34 @@ def readSingletons(unaligned_file):
 	return singletons
 
 
+# given a singleton, an assembly, and a windowsize alpha
+# returns a list of indices where the singleton matches the assembly
+
+def matchSingleton(singleton,assembly,alpha):
+	#ensure alpha is a small window
+	if alpha >= len(singleton):
+		print 'Alpha = '+alpha+' is greater than length of singleton '+singleton
+		sys.exit()
+	
+	#get alpha string
+	alphaString = singleton[0:alpha]
+
+	#result set of indices
+	indices=[]
+
+	resultIndex = 0
+	currentStart=0
+	while resultIndex != -1:
+		resultIndex = assembly.find(alphaString,currentStart,len(assembly))
+		if resultIndex != -1:
+			print 'Found match at position: '+str(resultIndex)
+			indices.append(resultIndex)
+			currentStart=resultIndex+1
+
+	return indices
+
+
+
 def Main():
 	parser = OptionParser()
 	parser.add_option("-a","--assembly-file", dest = "assembly_file")
@@ -79,6 +107,10 @@ def Main():
 		print 'Provide alpha (--alpha)'
 		sys.exit()
 
+	alpha = int(options.alpha)
+
+	print 'Using alpha of: '+str(alpha)
+
 	#read assembly
 	assemblyString = readAssembly(options.assembly_file)
 
@@ -89,9 +121,13 @@ def Main():
 
 	print 'Successfully read %d singletons' % len(singletons)
 
-	i=0
-	for singleton in singletons:
-		print 'Singleton '+str(i)+': \n\t'+singleton
+	#match singletons to assembly
+
+	i = 1
+	for s in singletons:
+		print 'Processing singleton: '+str(i)
+		indices = matchSingleton(s,assemblyString,alpha)
+		print 'Number of matches for singleton '+str(i)+':'+str(len(indices))
 		i+=1
 
 if __name__=="__main__":
