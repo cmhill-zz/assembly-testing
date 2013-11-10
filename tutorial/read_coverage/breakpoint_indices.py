@@ -8,6 +8,26 @@ import sys
 from optparse import OptionParser
 
 
+#reads an assembly from a FASTA file as one contiguous string. Returns said string.
+def readAssembly(assembly_file):
+	infile = open(assembly_file,'r')
+
+	assembly=[]
+	headerCount = 0
+	for line in infile:
+		#if this line is a header line, skip it
+		if line[0]==">":
+			headerCount+=1
+			continue
+		else:
+			assembly.append(line)
+
+
+	print 'Read %d headers' % headerCount
+	
+	assemblyString = "".join(assembly)
+	strippedString = assemblyString.strip().replace('\n','')
+	return strippedString
 
 
 
@@ -31,6 +51,11 @@ def Main():
 	if not options.alpha:
 		print 'Provide alpha (--alpha)'
 		sys.exit()
+
+	#read assembly
+	assemblyString = readAssembly(options.assembly_file)
+
+	print 'Successfully read assembly of length %d' % len(assemblyString)
 
 if __name__=="__main__":
 	Main()
