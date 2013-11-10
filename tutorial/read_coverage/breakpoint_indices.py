@@ -85,6 +85,27 @@ def matchSingleton(singleton,assembly,alpha):
 
 	return indices
 
+# given a list of singletons, an assembly, and a windowsize alpha
+# returns an array where each index represents the number of singletons that match at that point
+# with that alpha
+def naiveBreakpointDetect(singletons,assembly,alpha):
+	#initialize empty array
+	matchArray = []
+	for i in range(len(assembly)):
+		matchArray.append(0)
+
+	#for each singleton, increment matchArray everywhere a singleton matches
+	i=1
+	for s in singletons:
+		print 'Processing singleton ' + str(i) + ' of ' + str(len(singletons))
+		matchIndices = matchSingleton(s,assembly,alpha)
+		for index in matchIndices:
+			matchArray[index]+=1
+		i+=1
+
+	return matchArray
+
+
 
 
 def Main():
@@ -122,13 +143,9 @@ def Main():
 	print 'Successfully read %d singletons' % len(singletons)
 
 	#match singletons to assembly
+	matchArray = naiveBreakpointDetect(singletons,assemblyString,alpha)
 
-	i = 1
-	for s in singletons:
-		print 'Processing singleton: '+str(i)
-		indices = matchSingleton(s,assemblyString,alpha)
-		print 'Number of matches for singleton '+str(i)+':'+str(len(indices))
-		i+=1
+
 
 if __name__=="__main__":
 	Main()
