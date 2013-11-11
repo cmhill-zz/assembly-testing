@@ -91,7 +91,7 @@ def matchSingleton(singleton,assembly,alpha):
 # given a list of singletons, an assembly, and a windowsize alpha
 # returns an array where each index represents the number of singletons that match at that point
 # with that alpha
-def naiveBreakpointDetect(singletons,assembly,alpha):
+def naiveBreakpointDetect(singletons,assembly,alpha,outputFile=None):
 	#initialize empty array
 	matchArray = []
 	for i in range(len(assembly)):
@@ -106,6 +106,18 @@ def naiveBreakpointDetect(singletons,assembly,alpha):
 			matchArray[index]+=1
 		i+=1
 
+	if outputFile != None:
+		outputStream = open(outputFile,'w')
+
+		outputStream.write("Alpha = "+str(alpha)+"\n")
+		outputStream.write("Errors detected at:\n")
+		for i in matchArray:
+			if matchArray[i] > 0:
+				outputStream.write("\t"+str(i)+"\t"+str(matchArray[i])+"\n")
+
+		outputStream.close()
+
+
 	return matchArray
 
 
@@ -116,6 +128,7 @@ def Main():
 	parser.add_option("-a","--assembly-file", dest = "assembly_file")
 	parser.add_option("-u","--unaligned-file",dest = "unaligned_file")
 	parser.add_option("--alpha",dest = "alpha")
+	parser.add_option("-o","--output-file",dest = "output_file")
 
 	(options, args) = parser.parse_args()
 
@@ -130,6 +143,10 @@ def Main():
 	if not options.alpha:
 		print 'Provide alpha (--alpha)'
 		sys.exit()
+
+	output_file=None
+	if options.output_file:
+		output_file=options.output_file
 
 	alpha = int(options.alpha)
 
@@ -146,7 +163,7 @@ def Main():
 	print 'Successfully read %d singletons' % len(singletons)
 
 	#match singletons to assembly
-	matchArray = naiveBreakpointDetect(singletons,assemblyString,alpha)
+	matchArray = naiveBreakpointDetect(singletons,assemblyString,alpha,output_file)
 
 
 
