@@ -88,7 +88,7 @@ def errorDo(messer):
     # 3. Insertion/Deletion
 
     for iter in range(0,(len(genomeString)/opts.error_frequency)):
-    	if (iter*opts.error_frequency < len(good_data)):
+    	if (iter*opts.error_frequency < len(genomeString)):
     		errorStartPoints.append(random.randint(start, (iter+1)*opts.error_frequency))
     		start += opts.error_frequency
     	else:
