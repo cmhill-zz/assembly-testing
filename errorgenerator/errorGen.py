@@ -117,7 +117,7 @@ def errorDo(messer):
             str2 = errorString[exchangePoint:exchangePoint+errorLength]
 
             errorString = errorString[:i]+str2+errorString[i+errorLength:]
-            errorString = errorString[:exchangePoint]+str1+[exchangePoint+errorLength:]
+            errorString = errorString[:exchangePoint]+str1+errorString[exchangePoint+errorLength:]
 
 
     messer.setErrorPoints(errorStartPoints)
