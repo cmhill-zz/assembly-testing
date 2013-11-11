@@ -1,4 +1,5 @@
 import random
+import sys
 from optparse import OptionParser
 
 class AssemblyMesser(object):
@@ -68,13 +69,33 @@ def errorDo(messer):
     		errorStartPoints.append(random.randint(start, len(data)))
 
 
-    invertedString = genomeString
-    for i in errorStartPoints:
-    	errorCode = 1
-    	if (errorCode == 1):
-            invertedString = invertedString[:i] + invertedString[i:i+errorLength][::-1] + invertedString[i+errorLength:]
+
+    errorString = genomeString
+    for errorPointIndex in range(len(errorStartPoints)):
+    	errorCode = random.randint(1,2)
+        i = errorStartPoints[errorPointIndex]
+    	
+        if (errorCode == 1):
+            print 'Seeding inversion error at position '+str(i)
+            errorString = errorString[:i] + errorString[i:i+errorLength][::-1] + errorString[i+errorLength:]
+
+        if(errorCode == 2):
+            print 'Seeding rearrangement error at position '+str(i)
+            if (errorPointIndex == len(errorStartPoints) - 1):
+                continue # no point to exchange with
+
+            exchangePoint = errorStartPoints[errorPointIndex+1]
+
+            #exchange i+errorLen with exchangePoint+errorLen
+            str1 = errorString[i:i+errorLength]
+            str2 = errorString[exchangePoint:exchangePoint+errorLength]
+
+            errorString = errorString[:i]+str2+errorString[i+errorLength:]
+            errorString = errorString[:exchangePoint]+str1+[exchangePoint+errorLength:]
+
+
     messer.setErrorPoints(errorStartPoints)
-    messer.setBadData(invertedString)
+    messer.setBadData(errorString)
             
     
 def verifyOpts(options):
