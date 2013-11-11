@@ -68,7 +68,7 @@ def readSingletons(unaligned_file):
 def matchSingleton(singleton,assembly,alpha):
 	#ensure alpha is a small window
 	if alpha >= len(singleton):
-		print 'Alpha = '+alpha+' is greater than length of singleton '+singleton
+		print 'Alpha = '+str(alpha)+' is greater than length of singleton '+singleton
 		sys.exit()
 	
 	#get alpha string
