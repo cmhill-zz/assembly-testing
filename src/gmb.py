@@ -1,7 +1,9 @@
 #!/usr/bin/python
 
-import pysam
 import numpy as np
+import os
+import pysam
+
 from Bio import SeqIO
 
 class GoodMinusBadScorer:
@@ -76,11 +78,14 @@ class GoodMinusBadScorer:
             # Find the rightmost position of the mate-pair
             endPos = startPos + abs(read.tlen)
 
+            assert(startPos <= endPos)
+
             # Add score to the indices from leftmost to rightmost
             for index in xrange(startPos, endPos):
                 arr[index] = arr[index] + score
         else:
-            raise NotImplementedError("The case where different ends of mate-pair aligns to different references haven't been handled yet.")
+            if int(os.environ.get('DEBUG', 0)) > 0:
+                raise NotImplementedError("The case where different ends of mate-pair aligns to different references haven't been handled yet.")
 
     # Calculate good-minus-bad score for base-pairs in a specific reference
     def calculateScoreForReference(self, referenceName, referenceLength):
