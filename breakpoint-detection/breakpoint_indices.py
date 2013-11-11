@@ -91,7 +91,7 @@ def matchSingleton(singleton,assembly,alpha):
 # given a list of singletons, an assembly, and a windowsize alpha
 # returns an array where each index represents the number of singletons that match at that point
 # with that alpha
-def naiveBreakpointDetect(singletons,assembly,alpha):
+def naiveBreakpointDetect(singletons,assembly,alpha,outputFile=None):
 	#initialize empty array
 	matchArray = []
 	for i in range(len(assembly)):
@@ -105,6 +105,18 @@ def naiveBreakpointDetect(singletons,assembly,alpha):
 		for index in matchIndices:
 			matchArray[index]+=1
 		i+=1
+
+	if outputFile != None:
+		outputStream = open(outputFile,'w')
+
+		outputStream.write("Alpha = "+str(alpha)+"\n")
+		outputStream.write("Errors detected at:\n")
+		for i in matchArray:
+			if matchArray[i] > 0:
+				outputStream.write("\t"+str(i)+"\t"+str(matchArray[i])+"\n")
+
+		outputStream.close()
+
 
 	return matchArray
 
