@@ -5,13 +5,14 @@ import numpy as np
 from Bio import SeqIO
 
 class GoodMinusBadScorer:
+    # Initialize the GoodMinusBadScorer class
     def __init__(self, fastaFile, samFile):
         # assumption: assembly file is fasta
         self.fastaFile = fastaFile
         self.seqRecords = SeqIO.parse(self.fastaFile, "fasta")
-        # assumption: alignment file is a samfile
+        # assumption: alignment file is a bamfile
         self.samFile = samFile
-        self.samFileParser = pysam.Samfile(self.samFile, "r")
+        self.samFileParser = pysam.Samfile(self.samFile, "rb")
         self.avgMatePairLength = self.calculateAvgMatePairLength(self.samFileParser.fetch())
 
     # Calculate average lenght for mate-pairs which lies on the same contig.
@@ -23,23 +24,29 @@ class GoodMinusBadScorer:
         # However, since we are taking the average it won't matter even if we take both ends into account.
         # This should be faster compared to the alternative.
         for matePairRead in matePairReads:
-            # Check if this read is actually has a mate-pair
-            if not matePairRead.is_paired:
+            # Check if this read is mapped and it actually has a mapped mate-pair
+            if (not matePairRead.is_paired) or matePairRead.is_unmapped or matePairRead.mate_is_unmapped:
                 continue
 
             # Check if mate-pairs lie on the same contig
-            if not self.isInSameConting(matePairRead):
+            if not self.isInSameReference(matePairRead):
                 continue
-    
+
+            # Count the valid number of mate pairs that will add up in the running sum for length
             matePairCount = matePairCount + 1
+
+            # Add current mate-pair length to running sum
             runningSum = runningSum + abs(matePairRead.tlen)
 
+        # We are not prepared against having division-by-zero case
         if matePairCount == 0:
             raise NotImplementedError("The case where no valid mate-pairs exists for average length calculation is not handled")
 
+        # Return average mate-pair length
         return float(runningSum) / float(matePairCount)
 
-    def isInSameContig(self, alignedRead):
+    # Check if both ends of a mate-pair is in the same reference
+    def isInSameReference(self, alignedRead):
         # assumption: reference should be represented as an integer for both mate-pair
         # this integer is a key to some mapping which maps the integer to reference name
         assert(type(alignedRead.tid) is int)
@@ -47,9 +54,35 @@ class GoodMinusBadScorer:
 
         return alignedRead.tid == alignedRead.rnext
 
+    # Check if a mate pair length is bad or not
     def isBadPair(self, matePairLength):
-        return matePairLength > 2 * self.avgMatePairLength
+        return abs(matePairLength) > 2 * self.avgMatePairLength
 
+    # Add appropriate score to base-pair locations corresponds to where read is aligned
+    def addScore(self, arr, read):
+        if self.isInSameReference(read):
+            # Determine the score: -1 for bad, 1 for good
+            if self.isBadPair(read.tlen):
+                score = -1
+            else:
+                score = 1
+
+            # Get the leftmost position of the mate-pair
+            if(read.tlen < 0):
+                startPos = read.pnext
+            else:
+                startPos = read.pos
+                
+            # Find the rightmost position of the mate-pair
+            endPos = startPos + abs(read.tlen)
+
+            # Add score to the indices from leftmost to rightmost
+            for index in xrange(startPos, endPos):
+                arr[index] = arr[index] + score
+        else:
+            raise NotImplementedError("The case where different ends of mate-pair aligns to different references haven't been handled yet.")
+
+    # Calculate good-minus-bad score for base-pairs in a specific reference
     def calculateScoreForReference(self, referenceName, referenceLength):
         # initiliaze scoring array
         goodMinusBadScoreArray = np.zeros(referenceLength)
@@ -58,24 +91,21 @@ class GoodMinusBadScorer:
         alignedReads = self.samFileParser.fetch(referenceName)
 
         for alignedRead in alignedReads:
-            # Check if this read is actually a mate-pair
-            if alignedRead.is_paired:
-                # First, check if this is a bad pair
-                # Otherwise treat it as a good pair as long as both ends in the same contig.
-                # Note that inter-contig pairs can never be good pairs
-                if self.isBadPair(alignedRead.tlen):
-                    pass
-                elif self.isInSameContig(alignedRead):
-                    pass
+            # Check if this read is mapped and it had actually a mapped mate
+            if alignedRead.is_paired and not (alignedRead.is_unmapped or alignedRead.mate_is_unmapped):
+                self.addScore(goodMinusBadScoreArray, alignedRead)
 
-        # we divide by two since we count each mate-pair twice, one from each end.
+        # we divide by two since we count each mate-pair twice, one for each end.
         return goodMinusBadScoreArray / 2
 
+    # Calculate good-minus-bad scores for base-pairs for each reference in the fasta file
     def calculateScore(self):
         scoreDict = {}
         self.seqRecords = SeqIO.parse(self.fastaFile, "fasta")
         for seqRecord in self.seqRecords:
             scoreDict[seqRecord.id] = self.calculateScoreForReference(seqRecord.id, len(seqRecord))
+
+        return scoreDict
 
 
 
