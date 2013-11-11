@@ -128,6 +128,7 @@ def Main():
 	parser.add_option("-a","--assembly-file", dest = "assembly_file")
 	parser.add_option("-u","--unaligned-file",dest = "unaligned_file")
 	parser.add_option("--alpha",dest = "alpha")
+	parser.add_option("-o","--output-file",dest = "output_file")
 
 	(options, args) = parser.parse_args()
 
@@ -142,6 +143,10 @@ def Main():
 	if not options.alpha:
 		print 'Provide alpha (--alpha)'
 		sys.exit()
+
+	output_file=None
+	if options.output_file:
+		output_file=options.output_file
 
 	alpha = int(options.alpha)
 
@@ -158,7 +163,7 @@ def Main():
 	print 'Successfully read %d singletons' % len(singletons)
 
 	#match singletons to assembly
-	matchArray = naiveBreakpointDetect(singletons,assemblyString,alpha)
+	matchArray = naiveBreakpointDetect(singletons,assemblyString,alpha,output_file)
 
 
 
