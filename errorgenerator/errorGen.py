@@ -32,6 +32,27 @@ class AssemblyMesser(object):
         return self.bad_data
     
         
+#reads an assembly from a FASTA file as one contiguous string. Returns said string.
+def readAssembly(assembly_file):
+    infile = open(assembly_file,'r')
+
+    assembly=[]
+    headerCount = 0
+    for line in infile:
+        #if this line is a header line, skip it
+        if line[0]==">":
+            headerCount+=1
+            continue
+        else:
+            assembly.append(line)
+
+
+    print 'Read %d headers' % headerCount
+    
+    assemblyString = "".join(assembly)
+    strippedString = assemblyString.strip().replace('\n','')
+    return strippedString
+
 
 def errorWrite(messer):
     options = messer.options
@@ -46,11 +67,16 @@ def errorWrite(messer):
 def errorDo(messer):
     
     opts = messer.options
+
+    """
     with open(opts.assembly_file,"r") as assembly:
         good_data = assembly.read().replace('\n','')
     messer.setHeader(good_data[:good_data.index('cds')+3])
-    
-    genomeString = good_data[good_data.index('cds')+3:]
+    """
+    dummyHeader = ">1"
+    messer.setHeader(dummyHeader)
+        
+    genomeString = readAssembly(opts.assembly_file)
     
     errorStartPoints = []
     
