@@ -111,7 +111,7 @@ def naiveBreakpointDetect(singletons,assembly,alpha,outputFile=None):
 
 		outputStream.write("Alpha = "+str(alpha)+"\n")
 		outputStream.write("Errors detected at:\n")
-		for i in matchArray:
+		for i in range(len(matchArray)):
 			if matchArray[i] > 0:
 				outputStream.write("\t"+str(i)+"\t"+str(matchArray[i])+"\n")
 
