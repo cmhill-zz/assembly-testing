@@ -3,6 +3,15 @@
 ## Goal ##
 Design software to determine whether an assembly satisfies a set of mate-pair constraints.
 
+## Dependencies ##
+We have dependencies on following tools/packages:
+
+* python 2.7
+* numpy
+* biopython
+* samtools
+* pysam
+
 ## Usage ##
 Below is the template of main usage of our tool. This time it only executes good-minus-bad analysis; however, it will execute rest of the analysis soon.
 ```
