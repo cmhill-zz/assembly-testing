@@ -1,4 +1,4 @@
-# CMSC737 - Mate-pair Validation #
+# CMSC737 - Mate-Pair Validation #
 
 ## Goal ##
 Design software to determine whether an assembly satisfies a set of mate-pair constraints.
@@ -30,6 +30,7 @@ optional arguments:
 ## Good-Minus-Bad Analysis ##
 ### Algorithm ###
 The generic algorithm is as follows:
+
 1. Classify mate-pair reads as bad and good pairs
 2. Find the bad and good mate-pair reads covering a specific base-pair
 3. Compute score for that base pair
