@@ -84,6 +84,8 @@ In the third test case (tc_gau_ins_del) insertions and deletions both are made i
 
 In all test cases, the genome size is 100000, read length is 40 and distance between paired ends is 200.
 
+It takes a couple of seconds for the gaussian constraint to run for a genome sequence of size 100000 on a 1.3Ghz processor
+
 ## Good-Minus-Bad Analysis ##
 ### Algorithm ###
 The generic algorithm is as follows:
