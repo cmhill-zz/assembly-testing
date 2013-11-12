@@ -3,6 +3,7 @@
 import numpy as np
 import os
 import pysam
+import misassemblyRegion as mr
 
 from Bio import SeqIO
 
@@ -112,8 +113,26 @@ class GoodMinusBadScorer:
 
         return scoreDict
 
+    # Find misassembly regions
+    def findMisassemblyRegions(self):
+        scoreDict = self.calculateScore()
+        misassemblyRegions = []
+        for key in scoreDict:
+            scores = scoreDict[key]
+            isNegativeRegion = False
+            startPos = 0
+            badPos = 0
+            for index, score in enumerate(scores):
+                if score < 0 and (not isNegativeRegion):
+                    isNegativeRegion = not isNegativeRegion
+                    startPos = index
 
+                if score >= 0 and isNegativeRegion:
+                    isNegativeRegion = not isNegativeRegion
+                    endPos = index
+                    misassemblyRegions.append(mr.MisassemblyRegion(key, startPos, endPos, "inversion"))
 
-            
-            
-                      
+            if isNegativeRegion:
+                misassemblyRegions.append(mr.MisassemblyRegion(key, startPos, len(scores)-1, "inversion"))
+
+        return misassemblyRegions
