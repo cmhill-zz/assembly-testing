@@ -39,12 +39,9 @@ input.sam is the output of the bowtie2 aligner
 output is the file to which the score are written
 
 ### C/E Statistic Test Cases ###
-Each test case is available in a unique directory in the /testcases directory.
-Each test case can be run by the run_test.sh script in the directory
+Each test case is available in a unique directory in the /testcases directory. Each test case can be run by the run_test.sh script in the directory
 
-Since the CE Statistic is so highly sensitive to user input, they have been considered with somewhat arbitrary parameters. 
-The test cases look to see that the inserted error was found within a region equal to (c*|error length|, where c is user configured) of the error. 
-Errors are defined to be Z values with greater magnitude than 1.5 
+Since the CE Statistic is so highly sensitive to user input, they have been considered with somewhat arbitrary parameters. The test cases look to see that the inserted error was found within a region equal to (c*|error length|, where c is user configured) of the error. Errors are defined to be Z values with greater magnitude than 1.5 
 
 ### C/E Statistic Test Description ###
 
