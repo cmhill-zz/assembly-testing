@@ -33,5 +33,3 @@ echo "</testsuite>"
 echo "</testsuites>"
 
 rm tmp.results
-
-python src/evalScript.py

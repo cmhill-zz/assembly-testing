@@ -1,0 +1,2 @@
+Detection accuracy is (how many of the locations detected are actually errors) 0.942028985507
+Accuracy among test cases is (how may errors introduced were covered) 1.0

@@ -1,16 +1,16 @@
 import os
-import oracleTester
-import gaussianCheck
-import genAsblyAndOrcl
+import ../../src/oracleTester
+import ../../src/gaussianCheck
+import ../../src/genAsblyAndOrcl
 
-orgSq = 'testcases/tc_gaussian/insert/data.txt'
-ipSq = 'testcases/tc_gaussian/insert/dataMod.txt'
-outputIndex = 'testcases/tc_gaussian/insert/modIndex'
-read1 = 'testcases/tc_gaussian/insert/r1.fq'
-read2 = 'testcases/tc_gaussian/insert/r2.fq'
-outputMatchBowtie = 'testcases/tc_gaussian/insert/output.sam'
-matchGaussian = 'testcases/tc_gaussian/insert/match.txt'
-oracleLocation = 'testcases/tc_gaussian/insert/oracle.txt'
+orgSq = 'testcases/tc_gau_ins/data.txt'
+ipSq = 'testcases/tc_gau_ins/dataMod.txt'
+outputIndex = 'testcases/tc_gau_ins/modIndex'
+read1 = 'testcases/tc_gau_ins/r1.fq'
+read2 = 'testcases/tc_gau_ins/r2.fq'
+outputMatchBowtie = 'testcases/tc_gau_ins/output.sam'
+matchGaussian = 'testcases/tc_gau_ins/match.txt'
+oracleLocation = 'testcases/tc_gau_ins/oracle.txt'
 
 #generate sequence
 genAsblyAndOrcl.generateValidation(orgSq, ipSq, oracleLocation, True, False)
@@ -30,14 +30,14 @@ gaussianCheck.gCk(outputMatchBowtie, matchGaussian, 40)
 oracleTester.testOracle(matchGaussian, oracleLocation)
 
 
-orgSq = 'testcases/tc_gaussian/delete/data.txt'
-ipSq = 'testcases/tc_gaussian/delete/dataMod.txt'
-outputIndex = 'testcases/tc_gaussian/delete/modIndex'
-read1 = 'testcases/tc_gaussian/delete/r1.fq'
-read2 = 'testcases/tc_gaussian/delete/r2.fq'
-outputMatchBowtie = 'testcases/tc_gaussian/delete/output.sam'
-matchGaussian = 'testcases/tc_gaussian/delete/match.txt'
-oracleLocation = 'testcases/tc_gaussian/delete/oracle.txt'
+orgSq = 'testcases/tc_gau_del/data.txt'
+ipSq = 'testcases/tc_gau_del/dataMod.txt'
+outputIndex = 'testcases/tc_gau_del/modIndex'
+read1 = 'testcases/tc_gau_del/r1.fq'
+read2 = 'testcases/tc_gau_del/r2.fq'
+outputMatchBowtie = 'testcases/tc_gau_del/output.sam'
+matchGaussian = 'testcases/tc_gau_del/match.txt'
+oracleLocation = 'testcases/tc_gau_del/oracle.txt'
 
 #generate sequence
 genAsblyAndOrcl.generateValidation(orgSq, ipSq, oracleLocation, False, True)
@@ -58,14 +58,14 @@ oracleTester.testOracle(matchGaussian, oracleLocation)
 
 
 
-orgSq = 'testcases/tc_gaussian/insAndDel/data.txt'
-ipSq = 'testcases/tc_gaussian/insAndDel/dataMod.txt'
-outputIndex = 'testcases/tc_gaussian/insAndDel/modIndex'
-read1 = 'testcases/tc_gaussian/insAndDel/r1.fq'
-read2 = 'testcases/tc_gaussian/insAndDel/r2.fq'
-outputMatchBowtie = 'testcases/tc_gaussian/insAndDel/output.sam'
-matchGaussian = 'testcases/tc_gaussian/insAndDel/match.txt'
-oracleLocation = 'testcases/tc_gaussian/insAndDel/oracle.txt'
+orgSq = 'testcases/tc_gau_ins_del/data.txt'
+ipSq = 'testcases/tc_gau_ins_del/dataMod.txt'
+outputIndex = 'testcases/tc_gau_ins_del/modIndex'
+read1 = 'testcases/tc_gau_ins_del/r1.fq'
+read2 = 'testcases/tc_gau_ins_del/r2.fq'
+outputMatchBowtie = 'testcases/tc_gau_ins_del/output.sam'
+matchGaussian = 'testcases/tc_gau_ins_del/match.txt'
+oracleLocation = 'testcases/tc_gau_ins_del/oracle.txt'
 
 #generate sequence
 genAsblyAndOrcl.generateValidation(orgSq, ipSq, oracleLocation, True, True)
