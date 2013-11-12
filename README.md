@@ -33,8 +33,7 @@ optional arguments:
 ## C/E Statistic ##
 Running the ceStatistic:
 
-### C/E Statistic Usage ###
-'python ceStatistic.py <input.sam> <output>'
+'python ceStatistic.py [input.sam] [output]'
 
 input.sam is the output of the bowtie2 aligner
 output is the file to which the score are written
