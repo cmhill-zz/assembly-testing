@@ -86,6 +86,8 @@ In all test cases, the genome size is 100000, read length is 40 and distance bet
 
 It takes a couple of seconds for the gaussian constraint to run for a genome sequence of size 100000 on a 1.3Ghz processor
 
+The results of alignment are stored in match.txt and the score computed between the output of our tool with the oracle is written in result.txt
+
 ## Good-Minus-Bad Analysis ##
 ### Algorithm ###
 The generic algorithm is as follows:
@@ -118,7 +120,6 @@ optional arguments:
   -2 READFILE2          second part of the mate-pair reads
   --gmb BAMFILENAME     if present, do good minus bad analysis. this should be
                         a sorted and indexed BAM file.
-```
 
 ### Test cases ###
 We use "lambda virus" genome in this test. The reference genome and reads used in this test is taken from Bowtie 2 tutorial. We created BAM file and its index by using combination of Bowtie 2 and samtools.

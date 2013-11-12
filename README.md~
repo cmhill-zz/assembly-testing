@@ -54,7 +54,37 @@ tc_ce_deletion: this test case has only deletions, it is designed to verify that
 
 
 ## Gaussian Constraint ##
-**_TODO:_**
+### Algorithm ###
+The algorithm is is as follows:
+1) Given the reads, align the reads with the assembled genome using bowtie2
+2) Once alignment has been made, compute the global mean and the standard deviation
+3) Depending on the distance between paired ends in the sam file, the global mean and standard deviation, mark the region in the asssembly as potentially incorrect
+
+### Usage ###
+
+Since, the Gaussian Constraint is one of the many algorithms we are trying to find mis-assemblies, we have a python file which marks segment in the genome and it takes 3 arguments, the location of the sam file, the location of the output file where you want to write the regions of the mis-assembly and the read read length of the assembly, the function call is as follows:
+
+gCk(samLocation, writeLocation, readLength)
+
+The function can be imported as a python module and used as needed.
+
+We also provide a tool (genAsblyAndOrcl.py) to generate automated test cases in the form of a python script. It creates a genome sequence and mutates it by adding and deleting fragments from the original sequence and then marks the position of the inserts and deletes which is used as oracle information
+
+### Test Case Description ###
+
+In the first test case (tc_gau_ins), we generate a random sequence of length 100000 and mutate it at several positions
+ by deleting random sequences. We generate reads from the original sequence and align the reads with
+ the mutated sequence using bowtie. Finally, we use the Gaussian hypothesis to mark valid regions in
+ the genome. The oracle information is stored in 'output.txt' and the bad regions by the tool are 
+stored in 'match.txt', results obtained by comparing 'match.txt' and 'output.txt' are stored in 'result.txt'
+
+In the second test case (tc_gau_del) deletions are made in the genome sequence
+
+In the third test case (tc_gau_ins_del) insertions and deletions both are made in the genome sequence
+
+In all test cases, the genome size is 100000, read length is 40 and distance between paired ends is 200.
+
+It takes a couple of seconds for the gaussian constraint to run for a genome sequence of size 100000 on a 1.3Ghz processor
 
 ## Good-Minus-Bad Analysis ##
 ### Algorithm ###
@@ -88,7 +118,6 @@ optional arguments:
   -2 READFILE2          second part of the mate-pair reads
   --gmb BAMFILENAME     if present, do good minus bad analysis. this should be
                         a sorted and indexed BAM file.
-```
 
 ### Test cases ###
 We use "lambda virus" genome in this test. The reference genome and reads used in this test is taken from Bowtie 2 tutorial. We created BAM file and its index by using combination of Bowtie 2 and samtools.
