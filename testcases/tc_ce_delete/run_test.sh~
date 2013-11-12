@@ -1,0 +1,6 @@
+#!/bin/bash
+
+python ../../src/ceStatistic.py ./output.sam ./ceValues
+python ../../src/ceOracle.py ./ceValuesv ./oracle.txt
+
+exit 0
