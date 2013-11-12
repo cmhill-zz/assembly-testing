@@ -120,6 +120,7 @@ optional arguments:
   -2 READFILE2          second part of the mate-pair reads
   --gmb BAMFILENAME     if present, do good minus bad analysis. this should be
                         a sorted and indexed BAM file.
+```
 
 ### Test cases ###
 We use "lambda virus" genome in this test. The reference genome and reads used in this test is taken from Bowtie 2 tutorial. We created BAM file and its index by using combination of Bowtie 2 and samtools.
