@@ -31,7 +31,31 @@ optional arguments:
 ```
 
 ## C/E Statistic ##
-**_TODO:_**
+Running the ceStatistic:
+
+### C/E Statistic Usage ###
+'python ceStatistic.py <input.sam> <output>'
+
+input.sam is the output of the bowtie2 aligner
+output is the file to which the score are written
+
+### C/E Statistic Test Cases ###
+Each test case is available in a unique directory in the /testcases directory.
+Each test case can be run by the run_test.sh script in the directory
+
+Since the CE Statistic is so highly sensitive to user input, they have been considered with somewhat arbitrary parameters. 
+The test cases look to see that the inserted error was found within a region equal to (c*|error length|, where c is user configured) of the error. 
+Errors are defined to be Z values with greater magnitude than 1.5 
+
+### C/E Statistic Test Description ###
+
+tc_ce_insertion: this test case only has insertions, it is designed to verify that the ceStatistic is correctly finding insertion errors. 
+
+tc_ce_deletion: this test case has only deletions, it is designed to verify that the ceStatistic is correctly finding deletion errors. 
+
+
+
+
 
 ## Gaussian Constraint ##
 **_TODO:_**
