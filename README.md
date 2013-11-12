@@ -90,6 +90,17 @@ optional arguments:
                         a sorted and indexed BAM file.
 ```
 
+### Test cases ###
+We use "lambda virus" genome in this test. The reference genome and reads used in this test is taken from Bowtie 2 tutorial. We created BAM file and its index by using combination of Bowtie 2 and samtools.
+
+We pick this test for our feasibility study. The fasta file for the genome contains only single reference and we created an artificial misassembly on the genome by inverting region(s) between base pair locations listed in the respective oracle file. 
+
+In the first test (tc_gmb_1), we do inversion on single long region (compared to tc_gmb_2), 2100 base pairs. Inverting only one region simplifies the test and doing inversion on a long region should increase chances for misassembly region detection. Both these properties are ideal for a starter feasibility test.
+
+In the second test (tc_gmb_2), we do inversion on single long region (compared to tc_gmb_1), 700 base pairs. Doing inversion on shorter region tests the sensitivity of our analysis to the length of the region.
+
+In the third test (tc_gmb_3), we do inversion on multiple regions; more specifically, 3 regions. In other feasibility good-minus-bad analysis test cases (tc_gmb_1 and tc_gmb_2), we tested on a single region. By inverting multiple regions, we test whether having more than one inversion have negative effect on our analysis.
+
 ## Output Format ##
 We are considering to output 4 tab-seperated columns. First column will be the name of the reference where the misassembly occured. Second and third column will refer to leftmost and rightmost base pair locations, respectively. Finally, fourth column refers to type of the misassembly in this region. An example output would look like below:
 ```
