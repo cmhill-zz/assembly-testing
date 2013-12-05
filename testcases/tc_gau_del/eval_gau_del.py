@@ -17,7 +17,7 @@ oracleLocation = 'oracle.txt'
 accuracyLocation = 'result.txt'
 
 #generate sequence
-genAsblyAndOrcl.generateValidation(orgSq, ipSq, oracleLocation, False, True)
+#genAsblyAndOrcl.generateValidation(orgSq, ipSq, oracleLocation, False, True)
 
 #generate reads
 os.system('wgsim -1 40 -2 40 -R 0.0 -X 0.0 -e 0.0 -N 10000 -d 200 -s 0 ' + orgSq + ' ' + read1 + ' ' + read2 + ' >/dev/null')
