@@ -31,7 +31,7 @@ def gCk(samLocation, writeLocation, readLength):
  
     meanDistance = float(matePairDistanceSum)/(numValidPoints);
 
-    print(numValidPoints)
+#    print(numValidPoints)
 
     variance = 0;
 
@@ -40,8 +40,8 @@ def gCk(samLocation, writeLocation, readLength):
 
     variance = float(variance)/(numValidPoints);
     standardDeviation = math.sqrt(variance);
-    print(meanDistance);
-    print(standardDeviation);
+#    print(meanDistance);
+#    print(standardDeviation);
 
     inputFile.close();
 
@@ -88,10 +88,18 @@ def gCk(samLocation, writeLocation, readLength):
     if (len(badInsertInterval) > 0):
         badInsertInterval = merge(badInsertInterval)
 
+    print('Start of artificial test case, gaussian constraint')
+    print('\n')
+
     for intervals in badDeleteInterval:
         out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\td\n')
+        print('1\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tdeletion, found by mate pair\tNIL')
     for intervals in badInsertInterval:
         out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\ti\n')
+        print('1\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tinsertion, found by mate pair\tNIL')
+
+    print('End of test case')
+    print('\n')
 
     out.close()
 

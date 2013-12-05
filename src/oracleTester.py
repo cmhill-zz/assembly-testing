@@ -39,6 +39,8 @@ def testOracle(outputFile, oracleFile, resultFile):
     accuracyDetection = float(sum(flagArr))/len(flagArr)
 
     f = open(resultFile, 'w')
+    print('Detection accuracy is (how many of the locations detected are actually errors) ' + str(accuracyDetection) + '\n')
+    print('Accuracy among test cases is (how may errors introduced were covered) ' + str(accuracyTestCases) + '\n')
     f.write('Detection accuracy is (how many of the locations detected are actually errors) ' + str(accuracyDetection) + '\n')
     f.write('Accuracy among test cases is (how may errors introduced were covered) ' + str(accuracyTestCases) + '\n')
     f.close()
