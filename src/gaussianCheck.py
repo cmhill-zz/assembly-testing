@@ -40,8 +40,8 @@ def gCk(samLocation, writeLocation, readLength):
 
     variance = float(variance)/(numValidPoints);
     standardDeviation = math.sqrt(variance);
-#    print(meanDistance);
-#    print(standardDeviation);
+    print(meanDistance);
+    print(standardDeviation);
 
     inputFile.close();
 
@@ -55,9 +55,12 @@ def gCk(samLocation, writeLocation, readLength):
     minLength = meanDistance - standardDeviation;
     maxLength = meanDistance + standardDeviation;
 
+    print(minLength)
+    print(maxLength)
+
     count = 0
-    badInsertInterval = [];
-    badDeleteInterval = [];
+    badInsertInterval = {};
+    badDeleteInterval = {};
 
     for lines in inputFile:
         data = lines.split('\t');
@@ -65,6 +68,7 @@ def gCk(samLocation, writeLocation, readLength):
         length = math.fabs(int(data[8]));
         location = int(data[7]);
         readCount = data[0];
+        contig = data[2];
 
         #if location value is 0 it means that mate pair was not matched, continue
         if location == 0:
@@ -74,29 +78,41 @@ def gCk(samLocation, writeLocation, readLength):
         #now we only need to check for mate pairs whose distance is greater than zero
         if signLength > 0 and (length < minLength or length > maxLength):
             if length > meanDistance:
-                badInsertInterval.append([location - length + readLength, location])
+                if contig in badInsertInterval.keys():
+                    badInsertInterval[contig].append([location - length + readLength, location])
+                else:
+                    badInsertInterval[contig] = [[location - length + readLength, location]];
             else:
-                badDeleteInterval.append([location - length + readLength, location])
+                if contig in badDeleteInterval.keys():
+                    badDeleteInterval[contig].append([location - length + readLength, location])
+                else:
+                    badDeleteInterval[contig] = [[location - length + readLength, location]];
         count = count + 1;
 
     inputFile.close();
     out = open(writeLocation, 'w')
 
-    if (len(badDeleteInterval) > 0):
-        badDeleteInterval = merge(badDeleteInterval)
+    for contigs in badInsertInterval.keys():
+        if (len(badInsertInterval[contig]) > 0):
+            badInsertInterval[contig] = merge(badInsertInterval[contig])
 
-    if (len(badInsertInterval) > 0):
-        badInsertInterval = merge(badInsertInterval)
+    for contigs in badDeleteInterval.keys():
+        if (len(badDeleteInterval[contig]) > 0):
+            badDeleteInterval[contig] = merge(badDeleteInterval[contig])
 
     print('Start of artificial test case, gaussian constraint')
     print('\n')
 
-    for intervals in badDeleteInterval:
-        out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\td\n')
-        print('1\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tdeletion, found by mate pair\tNIL')
-    for intervals in badInsertInterval:
-        out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\ti\n')
-        print('1\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tinsertion, found by mate pair\tNIL')
+
+    for contigs in badDeleteInterval.keys():
+        for intervals in badDeleteInterval[contigs]:
+            out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\td\n')
+            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tdeletion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + readLength)+ '\tNIL')
+
+    for contigs in badInsertInterval.keys():
+        for intervals in badInsertInterval[contigs]:
+            out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\ti\n')
+            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tinsertion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + readLength) + '\tNIL')
 
     print('End of test case')
     print('\n')
