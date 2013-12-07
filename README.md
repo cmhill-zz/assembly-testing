@@ -6,17 +6,17 @@ Design software to determine whether an assembly satisfies a set of mate-pair co
 ## Dependencies ##
 We have dependencies on following tools/packages:
 
-* python 2.7
-* numpy
-* biopython
-* samtools
-* pysam
+* python 2.7.3
+* numpy 1.7.1
+* biopython 1.62
+* samtools 0.1.19
+* pysam 0.7.5
 
 ## Usage ##
 Below is the template of main usage of our tool. This time it only executes good-minus-bad analysis; however, it will execute rest of the analysis soon.
 ```
 usage: matePairAnalysis.py [-h] --fasta FASTAFILENAME -1 READFILE1 -2
-                           READFILE2 [--gmb BAMFILENAME]
+                           READFILE2 [--gmb] [-ce]
 
 Software to find misassemblies by doing mate-pair analysis
 
@@ -26,8 +26,8 @@ optional arguments:
                         fasta file name holding genome reference sequences
   -1 READFILE1          first part of the mate-pair reads
   -2 READFILE2          second part of the mate-pair reads
-  --gmb BAMFILENAME     if present, do good minus bad analysis. this should be
-                        a sorted and indexed BAM file.
+  --gmb			if present, do good minus bad analysis.
+  --ce			if present, do ce statistics.
 ```
 
 ## C/E Statistic ##
@@ -118,8 +118,8 @@ optional arguments:
                         fasta file name holding genome reference sequences
   -1 READFILE1          first part of the mate-pair reads
   -2 READFILE2          second part of the mate-pair reads
-  --gmb BAMFILENAME     if present, do good minus bad analysis. this should be
-                        a sorted and indexed BAM file.
+  --gmb			if present, do good minus bad analysis.
+  --ce			if present, do ce statistics.
 ```
 
 ### Test cases ###

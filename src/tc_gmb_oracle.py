@@ -9,7 +9,7 @@ def getmrlist(fname):
     with open(fname, "r") as f:
         for line in f:
             els = line.strip().split()
-            mrlist.append(mr.MisassemblyRegion(els[0], int(els[1]), int(els[2]), els[3]))
+            mrlist.append(mr.MisassemblyRegion(els[0], int(els[1]), int(els[2]), els[3],None))
     return mrlist
 
 # Check if misassembly regions are equivalent

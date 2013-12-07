@@ -130,9 +130,9 @@ class GoodMinusBadScorer:
                 if score >= 0 and isNegativeRegion:
                     isNegativeRegion = not isNegativeRegion
                     endPos = index
-                    misassemblyRegions.append(mr.MisassemblyRegion(key, startPos, endPos, "inversion"))
+                    misassemblyRegions.append(mr.MisassemblyRegion(key, startPos, endPos, "inversion", None))
 
             if isNegativeRegion:
-                misassemblyRegions.append(mr.MisassemblyRegion(key, startPos, len(scores)-1, "inversion"))
+                misassemblyRegions.append(mr.MisassemblyRegion(key, startPos, len(scores)-1, "inversion", None))
 
         return misassemblyRegions
