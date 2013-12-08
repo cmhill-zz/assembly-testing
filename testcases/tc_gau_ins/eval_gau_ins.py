@@ -17,10 +17,10 @@ oracleLocation = 'oracle.txt'
 accuracyLocation = 'result.txt'
 
 #generate sequence
-genAsblyAndOrcl.generateValidation(orgSq, ipSq, oracleLocation, True, False)
+#genAsblyAndOrcl.generateValidation(orgSq, ipSq, oracleLocation, True, False)
 
 #generate reads
-os.system('wgsim -1 40 -2 40 -R 0.0 -X 0.0 -e 0.0 -N 10000 -d 200 -s 0 ' + orgSq + ' ' + read1 + ' ' + read2 + ' >/dev/null')
+#os.system('wgsim -1 40 -2 40 -R 0.0 -X 0.0 -e 0.0 -N 10000 -d 200 -s 10 ' + orgSq + ' ' + read1 + ' ' + read2 + ' >/dev/null')
 
 #build index
 #os.system('bowtie2-build ' + ipSq + ' ' + outputIndex + ' >/dev/null')
@@ -31,4 +31,4 @@ os.system('wgsim -1 40 -2 40 -R 0.0 -X 0.0 -e 0.0 -N 10000 -d 200 -s 0 ' + orgSq
 #evaluate the alignment using mate pair criterion
 #gaussianCheck.gCk(outputMatchBowtie)
 
-#oracleTester.testOracle(matchGaussian, oracleLocation, accuracyLocation)
+oracleTester.testOracle(matchGaussian, oracleLocation, accuracyLocation)

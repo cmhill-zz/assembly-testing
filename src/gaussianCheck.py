@@ -38,7 +38,7 @@ def gCk(samLocation):
         prevLen = length
  
     meanDistance = float(matePairDistanceSum)/(numValidPoints);
-    print(readLength)
+#    print(readLength)
 #    print(numValidPoints)
 
     variance = 0;
@@ -48,8 +48,8 @@ def gCk(samLocation):
 
     variance = float(variance)/(numValidPoints);
     standardDeviation = math.sqrt(variance);
-    print(meanDistance);
-    print(standardDeviation);
+#    print(meanDistance);
+#    print(standardDeviation);
 
     inputFile.close();
 
@@ -60,11 +60,12 @@ def gCk(samLocation):
     tmp = inputFile.readline();
     tmp = inputFile.readline();
 
-    minLength = meanDistance - standardDeviation;
-    maxLength = meanDistance + standardDeviation;
+    dev = max(readLength, int(math.ceil(3*standardDeviation)))
+    minLength = int(meanDistance) - dev;
+    maxLength = int(meanDistance) + dev;
 
-    print(minLength)
-    print(maxLength)
+#    print(minLength)
+#    print(maxLength)
 
     count = 0
     badInsertInterval = {};
@@ -98,7 +99,7 @@ def gCk(samLocation):
         count = count + 1;
 
     inputFile.close();
-    out = open('result.txt', 'w')
+    out = open('match.txt', 'w')
 
     for contigs in badInsertInterval.keys():
         if (len(badInsertInterval[contig]) > 0):

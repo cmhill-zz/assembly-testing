@@ -7,10 +7,10 @@ def generateValidation(seqLoc, modSeqLoc, errorIndexLoc, insertFlag, deleteFlag)
     errorLocationIndexes = errorIndexLoc
 
     genomeLength = 100000;
-    minDiff = 40;
-    rangeDiff = 20;
-    insertSpacing = 3000;
-    deleteSpacing = 2600;
+    minDiff = 80;
+    rangeDiff = 30;
+    insertSpacing = 8000;
+    deleteSpacing = 8600;
     id = '1';
 
     referenceString = generateString(genomeLength);
