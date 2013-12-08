@@ -60,46 +60,157 @@ class GoodMinusBadScorer:
     # Check if a mate pair length is bad or not
     def isBadPair(self, matePairLength):
         return abs(matePairLength) > 2 * self.avgMatePairLength
-
-    # Add appropriate score to base-pair locations corresponds to where read is aligned
-    def addScore(self, arr, read):
-        if self.isInSameReference(read):
-            # Determine the score: -1 for bad, 1 for good
-            if self.isBadPair(read.tlen):
-                score = -1
-            else:
-                score = 1
-
-            # Get the leftmost position of the mate-pair
-            if(read.tlen < 0):
-                startPos = read.pnext
-            else:
-                startPos = read.pos
-                
-            # Find the rightmost position of the mate-pair
-            endPos = startPos + abs(read.tlen)
-
-            assert(startPos <= endPos)
-
-            # Add score to the indices from leftmost to rightmost
-            for index in xrange(startPos, endPos):
-                arr[index] = arr[index] + score
+    
+    # Get start and end position for a read. Read should be in the same contig
+    def getRangeForRead(self, read):
+        # Get the leftmost position of the mate-pair
+        if(read.tlen < 0):
+            startPos = read.pnext
         else:
-            if int(os.environ.get('DEBUG', 0)) > 0:
-                raise NotImplementedError("The case where different ends of mate-pair aligns to different references haven't been handled yet.")
+            startPos = read.pos
+                
+        # Find the rightmost position of the mate-pair
+        endPos = startPos + abs(read.tlen)
+        assert(startPos < endPos)
+
+        return (startPos, endPos)
+
+    def updateRangesAndScoresWithRead(self, partitionedRangeList, scoreDictionary, read):
+        # Compute new partitions for overlapping ranges r1 and r2
+        def computePartitionDict(r1, r2):
+            partitionDict = {"out1": None, "in1": None, "overlap": None, "in2": None, "out2": None}
+            if r2[0] < r1[0]:
+                partitionDict["out1"] = (r2[0], r1[0])
+                if r2[1] < r1[1]:
+                    partitionDict["overlap"] = (r1[0], r2[1])
+                    partitionDict["in2"] = (r2[1], r1[1])
+                else:
+                    partitionDict["overlap"] = r1
+                    if r1[1] != r2[1]:
+                        partitionDict["out2"] = (r1[1], r2[1])
+            else:
+                if r1[0] < r2[0]:
+                    partitionDict["in1"] = (r1[0], r2[0])
+                if r2[1] < r1[1]:
+                    partitionDict["overlap"] = r2
+                    partitionDict["in2"] = (r2[1], r1[1])
+                else:
+                    partitionDict["overlap"] = (r2[0], r1[1])
+                    if r1[1] != r2[1]:
+                        partitionDict["out2"] = (r1[1], r2[1])
+
+            return partitionDict
+
+        # Update range list
+        def updatePartitionedRangeList(partitionedRangeList, index, partitionDict):
+            newPartitionsInReverseOrder = [el for el in
+                                           [partitionDict["in2"], partitionDict["overlap"], partitionDict["in1"], partitionDict["out1"]]
+                                           if el != None]
+            for newRangePartition in newPartitionsInReverseOrder:
+                partitionedRangeList.insert(index, newRangePartition)
+
+        # Update score dictionary
+        def updateScoreDictionary(scoreDictionary, updateScore, currentRangeScore, partitionDict):
+            if partitionDict["out1"]:
+                scoreDictionary[partitionDict["out1"]] = updateScore
+            if partitionDict["in1"]:
+                scoreDictionary[partitionDict["in1"]] = currentRangeScore
+            if partitionDict["overlap"]:
+                scoreDictionary[partitionDict["overlap"]] = currentRangeScore + updateScore
+            if partitionDict["in2"]:
+                scoreDictionary[partitionDict["in2"]] = currentRangeScore
+
+        # Do binary search on partitionedRangeList to figure out where to start comparing ranges
+        def findStartingComparisonIndex(readRange, partitionedRangeList):
+            start = 0
+            end = len(partitionedRangeList)
+
+            if end == 0:
+                return 0
+            
+            while start != end:
+                mid = (start + end) / 2
+                range = partitionedRangeList[mid]
+
+                if readRange[1] <= range[0]:
+                    end = mid
+                elif range[1] <= readRange[0]:
+                    start = mid
+                else:
+                    break
+
+            while not (mid == 0 or readRange[1] <= range[0] or range[1] <= readRange[0]):
+                mid = mid - 1
+                range = partitionedRangeList[mid]
+
+            return mid
+
+
+        # If read is bad update with -1. Otherwise, update with 1
+        if self.isBadPair(read.tlen):
+            updateScore = -1
+        else:
+            updateScore = 1
+
+        # Modify range list with the current read and compute new scores accordingly
+        readRange = self.getRangeForRead(read)
+        counter = findStartingComparisonIndex(readRange, partitionedRangeList)
+        while counter < len(partitionedRangeList):
+            range = partitionedRangeList[counter]
+            if readRange[1] <= range[0]:
+                partitionedRangeList.insert(counter, readRange)
+                scoreDictionary[readRange] = updateScore
+                readRange = None
+                break
+            elif range[1] <= readRange[0]:
+                counter = counter + 1
+                continue
+
+            partitionedRangeList.pop(counter)
+            currentRangeScore = scoreDictionary.pop(range)
+            partitionDict = computePartitionDict(range, readRange)
+            
+            updatePartitionedRangeList(partitionedRangeList, counter, partitionDict)
+            updateScoreDictionary(scoreDictionary, updateScore, currentRangeScore, partitionDict)
+
+            if partitionDict["out2"]:
+                readRange = partitionDict["out2"]
+                counter = counter + 1
+            else:
+                readRange = None
+                break
+
+        # Handle the case where a range comes after every existing range
+        if readRange:
+            partitionedRangeList.append(readRange)
+            scoreDictionary[readRange] = updateScore
+
+    # Fill good minus bad score array according to range partition and their corresponding scores
+    def computeScoreArray(self, goodMinusBadScoreArray, partitionedRangeList, scoreDictionary):
+        for range in partitionedRangeList:
+            score = scoreDictionary[range]
+            for index in xrange(range[0], range[1]):
+                goodMinusBadScoreArray[index] = score
 
     # Calculate good-minus-bad score for base-pairs in a specific reference
     def calculateScoreForReference(self, referenceName, referenceLength):
-        # initiliaze scoring array
-        goodMinusBadScoreArray = np.zeros(referenceLength)
-
         # fetch all the reads aligned to the reference
         alignedReads = self.samFileParser.fetch(referenceName)
 
+        # Initialize helper data structures
+        scoreDictionary = {}
+        partitionedRangeList = []
         for alignedRead in alignedReads:
             # Check if this read is mapped and it had actually a mapped mate
-            if alignedRead.is_paired and not (alignedRead.is_unmapped or alignedRead.mate_is_unmapped):
-                self.addScore(goodMinusBadScoreArray, alignedRead)
+            if self.isInSameReference(alignedRead) and alignedRead.is_paired and not (alignedRead.is_unmapped or alignedRead.mate_is_unmapped):
+                self.updateRangesAndScoresWithRead(partitionedRangeList, scoreDictionary, alignedRead)
+            else:
+                if int(os.environ.get('DEBUG', 0)) > 0:
+                    raise NotImplementedError("The case where different ends of mate-pair aligns to different references haven't been handled yet.")
+
+        # compute scoring array
+        goodMinusBadScoreArray = np.zeros(referenceLength, dtype=int)
+        self.computeScoreArray(goodMinusBadScoreArray, partitionedRangeList, scoreDictionary)
 
         # we divide by two since we count each mate-pair twice, one for each end.
         return goodMinusBadScoreArray / 2
