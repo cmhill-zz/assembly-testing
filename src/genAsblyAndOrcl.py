@@ -17,7 +17,7 @@ def generateValidation(seqLoc, modSeqLoc, errorIndexLoc, insertFlag, deleteFlag)
 
     outputFile = open(writeLocation, 'w');
     i = 0
-    outputFile.write('>gi| Software Testing ' + id + '\n')
+    outputFile.write('>1\n')
     while i < (len(referenceString) - 80):
         outputFile.write(referenceString[i:i+80])
         outputFile.write('\n')
@@ -74,7 +74,7 @@ def generateValidation(seqLoc, modSeqLoc, errorIndexLoc, insertFlag, deleteFlag)
     #also the length of the deletes and inserts
     modifiedFile = open(writeLocationMod, 'w');
     i = 0
-    modifiedFile.write('>gim|Software Testing ' + id + '\n')
+    modifiedFile.write('>1\n')
     while i < (len(generatedString) - 80):
         modifiedFile.write(generatedString[i:i+80])
         modifiedFile.write('\n')

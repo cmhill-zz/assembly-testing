@@ -6,8 +6,8 @@ import oracleTester
 import gaussianCheck
 import genAsblyAndOrcl
 
-orgSq = 'data.txt'
-ipSq = 'dataMod.txt'
+orgSq = 'delRef.fasta'
+ipSq = 'delTest.fasta'
 outputIndex = 'modIndex'
 read1 = 'r1.fq'
 read2 = 'r2.fq'
@@ -29,6 +29,6 @@ accuracyLocation = 'result.txt'
 #os.system('bowtie2 -x ' + outputIndex + ' -1 ' + read1 + ' -2 ' + read2 + ' -S ' + outputMatchBowtie + ' >/dev/null')
 
 #evaluate the alignment using mate pair criterion
-gaussianCheck.gCk(outputMatchBowtie, matchGaussian, 40)
+#gaussianCheck.gCk(outputMatchBowtie)
 
 oracleTester.testOracle(matchGaussian, oracleLocation, accuracyLocation)

@@ -4,8 +4,9 @@
 
 import os
 import math
+import misassemblyRegion as mr
 
-def gCk(samLocation, writeLocation, readLength):
+def gCk(samLocation):
 
     inputFile = open(samLocation, 'r');
 
@@ -18,19 +19,26 @@ def gCk(samLocation, writeLocation, readLength):
 
     numValidPoints = 0;
 
+    prevLocation = 0
+    prevLen = 0
     for lines in inputFile:
         data = lines.split('\t');
         length = math.fabs(int(data[8]));
         signLength = int(data[8])
+        location = int(data[7])
+        if (prevLen > 0 and length == prevLen):
+            readLength = length - math.fabs(location - prevLocation)
         #do not count pairs which are not found and those which are too out of place
         #we know that insert length cannot be greater than 1000
         if signLength > 0 and signLength < 500:
             matePairDistanceSum = matePairDistanceSum + length;
             matePairLengthArray.append(length);
             numValidPoints = numValidPoints + 1;
+        prevLocation = location
+        prevLen = length
  
     meanDistance = float(matePairDistanceSum)/(numValidPoints);
-
+    print(readLength)
 #    print(numValidPoints)
 
     variance = 0;
@@ -90,7 +98,7 @@ def gCk(samLocation, writeLocation, readLength):
         count = count + 1;
 
     inputFile.close();
-    out = open(writeLocation, 'w')
+    out = open('result.txt', 'w')
 
     for contigs in badInsertInterval.keys():
         if (len(badInsertInterval[contig]) > 0):
@@ -100,23 +108,24 @@ def gCk(samLocation, writeLocation, readLength):
         if (len(badDeleteInterval[contig]) > 0):
             badDeleteInterval[contig] = merge(badDeleteInterval[contig])
 
-    print('Start of artificial test case, gaussian constraint')
-    print('\n')
+#    print('Start of artificial test case, gaussian constraint')
+#    print('\n')
 
+    misassemblyRegions = []
 
     for contigs in badDeleteInterval.keys():
         for intervals in badDeleteInterval[contigs]:
             out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\td\n')
-            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tdeletion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + readLength)+ '\tNIL')
+            misassemblyRegions.append(mr.MisassemblyRegion(contigs, str(int(intervals[0])), str(int(intervals[1])), "deletion"))
+#            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tdeletion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + readLength)+ '\tNIL')
 
     for contigs in badInsertInterval.keys():
         for intervals in badInsertInterval[contigs]:
             out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\ti\n')
-            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tinsertion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + readLength) + '\tNIL')
+            misassemblyRegions.append(mr.MisassemblyRegion(contigs, str(int(intervals[0])), str(int(intervals[1])), "insertion"))
+#            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tinsertion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + readLength) + '\tNIL')
 
-    print('End of test case')
-    print('\n')
-
+    return misassemblyRegions
     out.close()
 
 def sortList(l, sort = True):

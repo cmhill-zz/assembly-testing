@@ -48,6 +48,7 @@ parser.add_argument("-1", dest="readFile1", required=True, help="first part of t
 parser.add_argument("-2", dest="readFile2", required=True, help="second part of the mate-pair reads")
 parser.add_argument("--gmb", dest="gmb", action="store_true", help="if present, do good minus bad analysis.")
 parser.add_argument("--ce", dest="ce", action="store_true", help="if present, do ce Statistic")
+parser.add_argument("--gau", dest="gau", action="store_true", help="if present, do gaussian analysis")
 
 args = parser.parse_args()
 
@@ -67,6 +68,11 @@ if args.gmb:
     import gmb
     g = gmb.GoodMinusBadScorer(args.fastaFileName, randomNamesDict["sortedBamFileName"])
     misassemblyRegionList = g.findMisassemblyRegions()
+
+if args.gau:
+    import gaussianCheck
+    gaussianErrorList = gaussianCheck.gCk(randomNamesDict["samFileName"])
+    misassemblyRegionList.extend(gaussianErrorList)
 
 if args.ce:
     import ceStatitic
