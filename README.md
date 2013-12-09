@@ -75,16 +75,7 @@ The algorithm is is as follows:
 2) Once alignment has been made, compute the global mean and the standard deviation
 3) Depending on the distance between paired ends in the sam file, the global mean and standard deviation, mark the region in the asssembly as potentially incorrect
 
-### Usage ###
-
-In order to use the tool, you need to provide the assembly file and the read files which contain mate pair information. For using the 
-gaussian constraint to detect mis assemblies, you need to provide the --gau flag. If you feel that not many mis-assembles are detected, increase
-the gau_multiplier for more detections. If you feel that some detections are incorrect, reduce gau_multipler. The default value used is 4
-
-python matePairAnalysis.py --fasta [input-file.fasta] -1 [read-file-1.fq] -2 [read-file-2.fq] --gau
-python matePairAnalysis.py --fasta [input-file.fasta] -1 [read-file-1.fq] -2 [read-file-2.fq] --gau --gau_multiplier 4
-
-### Test Case Description for gaussian multipler###
+### Test Case Description for gaussian ###
 
 In the first test case (tc_3), we generate a random sequence of length 100000 and mutate it at several positions
  by deleting random sequences. We generate reads from the original sequence and align the reads with
@@ -121,15 +112,15 @@ Finally, we take negative scored regions as low scored regions. That is, negativ
 ### Test cases ###
 We use "lambda virus" genome in this test. The reference genome and reads used in this test is taken from Bowtie 2 tutorial. We created BAM file and its index by using combination of Bowtie 2 and samtools.
 
-We pick this test for our feasibility study. The fasta file for the genome contains only single reference and we created an artificial misassembly on the genome by inverting region(s) between base pair locations listed in the respective oracle file. 
+The fasta file for the genome contains only single reference and we created an artificial misassembly on the genome by inverting region(s) between base pair locations listed in the respective oracle file. 
 
-In the first test (tc_gmb_1), we do inversion on single long region (compared to tc_gmb_2), 2100 base pairs. Inverting only one region simplifies the test and doing inversion on a long region should increase chances for misassembly region detection. Both these properties are ideal for a starter feasibility test.
+In the first test (tc_7), we do inversion on single long region (compared to tc_gmb_2), 2100 base pairs. Inverting only one region simplifies the test and doing inversion on a long region should increase chances for misassembly region detection. Both these properties are ideal for a starter feasibility test.
 
-In the second test (tc_gmb_2), we do inversion on single long region (compared to tc_gmb_1), 700 base pairs. Doing inversion on shorter region tests the sensitivity of our analysis to the length of the region.
+In the second test (tc_8), we do inversion on single long region (compared to tc_gmb_1), 700 base pairs. Doing inversion on shorter region tests the sensitivity of our analysis to the length of the region.
 
-In the third test (tc_gmb_3), we do inversion on multiple regions; more specifically, 3 regions. In other feasibility good-minus-bad analysis test cases (tc_gmb_1 and tc_gmb_2), we tested on a single region. By inverting multiple regions, we test whether having more than one inversion have negative effect on our analysis.
+In the third test (tc_9), we do inversion on multiple regions; more specifically, 3 regions. In other feasibility good-minus-bad analysis test cases (tc_gmb_1 and tc_gmb_2), we tested on a single region. By inverting multiple regions, we test whether having more than one inversion have negative effect on our analysis.
 
-## Output Format ##
+## Output and Oracle Format ##
 We are considering to output 5 tab-seperated columns. First column will be the name of the reference where the misassembly occured. Second and third column will refer to leftmost and rightmost base pair locations, respectively. Note that second column is inclusive whereas third column is exclusive. Fourth column refers to type of the misassembly in this region. Fifth column holds the value for the confidence in that misassembly region finding. Last column is only meaningful for breakpoint analysis group. We fill this column regardless to be consistent with other groups. An example output for mate-pair analysis would look like below:
 ```
 gi|9626243|ref|NC_001416.1|     19928   22086   inversion       None
