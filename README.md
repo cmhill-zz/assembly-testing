@@ -29,6 +29,7 @@ optional arguments:
   -1 READFILE1          first part of the mate-pair reads
   -2 READFILE2          second part of the mate-pair reads
   --gmb                 if present, do good minus bad analysis
+  --gau_multiplier	if is the present, it changes the window in which the next mate pair should be found
   --ce                  if present, do ce Statistic
   --gau                 if present, do gaussian analysis
 ```
@@ -61,31 +62,34 @@ The algorithm is is as follows:
 
 ### Usage ###
 
-Since, the Gaussian Constraint is one of the many algorithms we are trying to find mis-assemblies, we have a python file which marks segment in the genome and it takes 3 arguments, the location of the sam file, the location of the output file where you want to write the regions of the mis-assembly and the read read length of the assembly, the function call is as follows:
+Since, the Gaussian Constraint is one of the many algorithms we are trying to find mis-assemblies, we have a python file which marks segment in the
+ genome and it takes 3 arguments, the location of the sam file, the location of the output file where you want to write the regions of the mis-assembly 
+and the read read length of the assembly, the function call is as follows:
 
-gCk(samLocation, writeLocation, readLength)
+In order to use the tool, you need to provide the assembly file and the read files which contain mate pair information. For using the 
+gaussian constraint to detect mis assemblies, you need to provide the --gau flag. If you feel that not many mis-assembles are detected, increase
+the gau_multiplier for more detections. If you feel that some detections are incorrect, reduce gau_multipler. The default value used is 4
 
-The function can be imported as a python module and used as needed.
+python matePairAnalysis.py --fasta [input-file.fasta] -1 [read-file-1.fq] -2 [read-file-2.fq] --gau
+python matePairAnalysis.py --fasta [input-file.fasta] -1 [read-file-1.fq] -2 [read-file-2.fq] --gau --gau_multiplier 4
 
-We also provide a tool (genAsblyAndOrcl.py) to generate automated test cases in the form of a python script. It creates a genome sequence and mutates it by adding and deleting fragments from the original sequence and then marks the position of the inserts and deletes which is used as oracle information
+### Test Case Description for gaussian multipler###
 
-### Test Case Description ###
-
-In the first test case (tc_gau_ins), we generate a random sequence of length 100000 and mutate it at several positions
+In the first test case (tc_3), we generate a random sequence of length 100000 and mutate it at several positions
  by deleting random sequences. We generate reads from the original sequence and align the reads with
  the mutated sequence using bowtie. Finally, we use the Gaussian hypothesis to mark valid regions in
- the genome. The oracle information is stored in 'output.txt' and the bad regions by the tool are 
-stored in 'match.txt', results obtained by comparing 'match.txt' and 'output.txt' are stored in 'result.txt'
+ the genome. The oracle information is stored in 'oracle.txt' and the bad regions by the tool are 
+stored in 'match.txt', results obtained by comparing 'match.txt' and 'oracle.txt' are stored in 'result.txt'
 
-In the second test case (tc_gau_del) deletions are made in the genome sequence
+In the second test case (tc_4) deletions are made in the genome sequence
 
-In the third test case (tc_gau_ins_del) insertions and deletions both are made in the genome sequence
+In the third test case (tc_5) insertions and deletions both are made in the genome sequence
+
+In the fourth test case (tc_6) insertions and deletions both are made in a practical genome rhodobacter
 
 In all test cases, the genome size is 100000, read length is 40 and distance between paired ends is 200.
 
 It takes a couple of seconds for the gaussian constraint to run for a genome sequence of size 100000 on a 1.3Ghz processor
-
-The results of alignment are stored in match.txt and the score computed between the output of our tool with the oracle is written in result.txt
 
 ## Good-Minus-Bad Analysis ##
 ### Algorithm ###
