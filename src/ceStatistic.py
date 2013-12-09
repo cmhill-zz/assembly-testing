@@ -115,6 +115,7 @@ class CEStatistic:
         t = self.threshold 
         startLoc = 0
         endLoc = 0
+        doingMisassemblyType = None
         for contig in self.readArray.keys():
             self.positions[contig] = sorted(self.readArray[contig].keys())
             maximum = self.positions[contig][len(self.positions[contig])-1]
@@ -124,21 +125,41 @@ class CEStatistic:
                 self.doWindow(i, i+self.windowSize, self.readArray[contig], meanDistance, standardDeviation, contig)
                 
             for v in sorted(self.zScores[contig].keys()):
-                if( ((float(self.zScores[contig][v][0])/self.zScores[contig][v][1]) >= t) or (float(self.zScores[contig][v][0])/self.zScores[contig][v][1]) <= (-1*t) ):
-                    if(not doingMisassembly): #found the beginning of a misassembled region
-                        doingMisassembly = True
+                if( ((float(self.zScores[contig][v][0])/self.zScores[contig][v][1]) >= t) ):
+                    if(doingMisassembly and doingMisassemblyType == "insertion"): #already doing the correct type...
+                        endLoc = v
+                    elif(doingMisassembly and doingMisassemblyType == "deletion"): #doing a misassembly, but not right type...
+                        self.misassemblies.append(MisassemblyRegion(contig, startLoc, endLoc, doingMisassemblyType, None)) #end the current region...
                         startLoc = v
                         endLoc = v
-                    else: # found the middle of a misassembled region
+                        doingMisassemblyType = "insertion"
+                    else:
+                        doingMisassembly = True
+                        doingMisassemblyType = "insertion"
+                        startLoc = v
                         endLoc = v
-                        
+                elif( (float(self.zScores[contig][v][0])/self.zScores[contig][v][1]) <= (-1*t) ):
+                    if(doingMisassembly and doingMisassemblyType == "deletion"):
+                        endLoc = v
+                    elif(doingMisassembly and doingMisassemblyType == "insertion"):
+                        self.misassemblies.append(MisassemblyRegion(contig, startLoc, endLoc, doingMisassemblyType, None)) #end the current region...
+                        startLoc = v
+                        endLoc = v
+                        doingMisassemblyType = "deletion"
+                    else:
+                        doingMisassembly = True
+                        doingMisassemblyType = "deletion"
+                        startLoc = v
+                        endLoc = v
                 else:
-                    if(doingMisassembly): #end of misassembled region
-                        doingMisassembly = False
-         #               print "Contig: %s Start: %d | End %d" % (contig, startLoc, endLoc)
-                        self.misassemblies.append(MisassemblyRegion(contig, startLoc, endLoc, "insertion/deletion", None))
+                    if(doingMisassembly):
+                        self.misassemblies.append(MisassemblyRegion(contig, startLoc, endLoc, doingMisassemblyType, None))
+                    doingMisassembly = False
+                    doingMisassemblyType == None
 
     def getMisassemblies(self):
+        #for m in self.misassemblies:
+            #print "%s\t\t%d\t%d\t%s" % (m.getName(), m.getStart(), m.getEnd(), m.getType())
         return self.misassemblies
                                                   
 
@@ -147,4 +168,5 @@ class CEStatistic:
 
 
 #input = sys.argv[1]
-#ce = CEStatistic(input, 150, 100, 1.2)
+#ce = CEStatistic(input, 150, 100, 1.5)
+#ce.getMisassemblies()
