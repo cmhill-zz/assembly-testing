@@ -93,7 +93,7 @@ if args.gau:
     misassemblyRegionList.extend(gaussianErrorList)
 
 if args.ce:
-    import ceStatitic
+    import ceStatistic
     ce = ceStatistic.CE(randomNamesDict["samFileName"], args.windowSize, args.windowStep, args.threshold)
     ce_result = ce.getMisassemblies()
     misassemblyRegionList.extend(ce_result)
