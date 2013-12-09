@@ -17,3 +17,9 @@ class MisassemblyRegion():
 
     def getRegionLength(self):
         return self.endPos - self.startPos + 1
+
+    def getStart(self):
+        return self.startPos
+        
+    def getEnd(self):
+        return self.endPos
