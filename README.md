@@ -46,16 +46,19 @@ optional arguments:
                         size for the moving window average. Default is 100
   --ce_threshold THRESHOLD
                         this is used in CE Statistic; controls the theshold
-                        for marking regions as bad. Default is 1.2
+                        for marking regions as bad. Default is 2.5
 ```
 
 ## C/E Statistic ##
-Running the ceStatistic:
+### Algorithm ### 
+The algorithm is as follows:
+1) Given the reads, align the reads with the assembled genome using bowtie2
+2) Once the alignment has been made, compute the global mean (M), and the global standard deviation (S)
+3) Loop through the assembly, computing the implied average length (u); and count the number of inserts in the region (N)
+4) Compute the Z statistic: Z = (M-u)/(S/sqrt(N)) for each insert in the region. 
+5) Average all of the Z scores that each insert received. 
+6) Make a final pass, marking the inserts that have Z values less than -1*threshold as potential areas of deletion, and areas with Z values greater than threshold as potential insertions.
 
-'python ceStatistic.py [input.sam] [output]'
-
-input.sam is the output of the bowtie2 aligner
-output is the file to which the score are written
 
 ### C/E Statistic Test Cases ###
 Each test case is available in a unique directory in the /testcases directory. Each test case can be run by the run_test.sh script in the directory
@@ -64,9 +67,15 @@ Since the CE Statistic is so highly sensitive to user input, they have been cons
 
 ### C/E Statistic Test Description ###
 
-tc_ce_insertion: this test case only has insertions, it is designed to verify that the ceStatistic is correctly finding insertion errors. 
+In the frist test case (tc_1): we generate a random sequence of length 100000 and mutate it at several positions
+ by deleting random sequences. We generate reads from the original sequence and align the reads with
+ the mutated sequence using bowtie. Finally, we use the Gaussian hypothesis to mark valid regions in
+ the genome. The oracle information is stored in 'oracle.txt' and the bad regions by the tool are 
+stored in 'match.txt', results obtained by comparing 'match.txt' and 'oracle.txt' are stored in 'result.txt'; the CE Statistic is run with the threshold set to 2.5.
 
-tc_ce_deletion: this test case has only deletions, it is designed to verify that the ceStatistic is correctly finding deletion errors. 
+
+In the second test case(tc_2) insertions are made in the genomic sequence; CE Statistic is run with the threshold set to 2.5.
+
 
 ## Gaussian Constraint ##
 ### Algorithm ###
@@ -77,11 +86,7 @@ The algorithm is is as follows:
 
 ### Test Case Description for gaussian ###
 
-In the first test case (tc_3), we generate a random sequence of length 100000 and mutate it at several positions
- by deleting random sequences. We generate reads from the original sequence and align the reads with
- the mutated sequence using bowtie. Finally, we use the Gaussian hypothesis to mark valid regions in
- the genome. The oracle information is stored in 'oracle.txt' and the bad regions by the tool are 
-stored in 'match.txt', results obtained by comparing 'match.txt' and 'oracle.txt' are stored in 'result.txt'
+In the first test case (tc_3), insertions are made in the genome sequence
 
 In the second test case (tc_4) deletions are made in the genome sequence
 
