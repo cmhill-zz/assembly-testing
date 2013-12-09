@@ -94,7 +94,7 @@ if args.gau:
 
 if args.ce:
     import ceStatistic
-    ce = ceStatistic.CE(randomNamesDict["samFileName"], args.windowSize, args.windowStep, args.threshold)
+    ce = ceStatistic.CEStatistic(randomNamesDict["samFileName"], args.windowSize, args.windowStep, args.threshold)
     ce_result = ce.getMisassemblies()
     misassemblyRegionList.extend(ce_result)
 

@@ -136,7 +136,7 @@ class CEStatistic:
                     if(doingMisassembly): #end of misassembled region
                         doingMisassembly = False
          #               print "Contig: %s Start: %d | End %d" % (contig, startLoc, endLoc)
-                        self.misassemblies.append(MisassemblyRegion(contig, startLoc, endLoc, "ceStatistic"))
+                        self.misassemblies.append(MisassemblyRegion(contig, startLoc, endLoc, "insertion/deletion", None))
 
     def getMisassemblies(self):
         return self.misassemblies
