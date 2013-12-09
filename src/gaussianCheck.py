@@ -6,7 +6,7 @@ import os
 import math
 import misassemblyRegion as mr
 
-def gCk(samLocation):
+def gCk(samLocation, multiplier):
 
     inputFile = open(samLocation, 'r');
 
@@ -60,7 +60,7 @@ def gCk(samLocation):
     #start processing again to mark locations which are bad
     inputFile = open(samLocation, 'r');
 
-    dev = max(avgReadLength, int(math.ceil(4*standardDeviation)))
+    dev = max(avgReadLength, int(math.ceil(multiplier*standardDeviation)))
     minLength = int(meanDistance) - dev;
     maxLength = int(meanDistance) + dev;
 
