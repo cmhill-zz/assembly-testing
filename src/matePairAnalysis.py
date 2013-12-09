@@ -46,7 +46,8 @@ def createRandomNamesDict():
     return randomNamesDict
 
 parser = argparse.ArgumentParser(description="Software to find misassemblies by doing mate-pair analysis." +
-                                 " If you do not provide any of the analysis flags, all of the analysis will be executed.")
+                                 " If any of the analysis flag is provided, only those analysis will be executed." +
+                                 " Otherwise, all of the analysis will be executed.")
 parser.add_argument("--fasta", dest="fastaFileName", required=True, help="fasta file name holding genome reference sequences")
 parser.add_argument("-1", dest="readFile1", required=True, help="first part of the mate-pair reads")
 parser.add_argument("-2", dest="readFile2", required=True, help="second part of the mate-pair reads")

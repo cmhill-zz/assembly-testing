@@ -18,8 +18,9 @@ Below is how to execute our software:
 usage: matePairAnalysis.py [-h] --fasta FASTAFILENAME -1 READFILE1 -2
                            READFILE2 [--gmb] [--ce] [--gau]
 
-Software to find misassemblies by doing mate-pair analysis. If you do not
-provide any of the analysis flags, all of the analysis will be executed.
+Software to find misassemblies by doing mate-pair analysis. If any of the
+analysis flag is provided, only those analysis will be executed. Otherwise,
+all of the analysis will be executed.
 
 optional arguments:
   -h, --help            show this help message and exit
