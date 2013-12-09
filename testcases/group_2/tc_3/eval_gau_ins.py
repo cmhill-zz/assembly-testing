@@ -1,6 +1,6 @@
 import os
 import sys
-sys.path.insert(0, '../../src')
+sys.path.insert(0, '../../../src')
 
 import oracleTester
 import gaussianCheck
@@ -13,7 +13,7 @@ read1 = 'r1.fq'
 read2 = 'r2.fq'
 outputMatchBowtie = 'output.sam'
 matchGaussian = 'match.txt'
-oracleLocation = 'oracle.txt'
+oracleLocation = 'oracle'
 accuracyLocation = 'result.txt'
 
 #generate sequence

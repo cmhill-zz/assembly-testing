@@ -13,19 +13,21 @@ def testOracle(outputFile, oracleFile, resultFile):
         matchDataLine = matchData[i].split('\t')
         if len(matchData[i]) == 0:
             continue
-        left = int(matchDataLine[0])
-        right = int(matchDataLine[1])
-        signal = matchDataLine[2]
+        contig = matchDataLine[0]
+        left = int(matchDataLine[1])
+        right = int(matchDataLine[2])
+        signal = matchDataLine[3]
         flag = 0
         count = 0
         for j in range(len(oracleLines)):
             dataLine = oracleLines[j].split('\t')
             if len(oracleLines[j]) == 0:
                 continue
-            oleft = int(dataLine[0])
-            oright = oleft + int(dataLine[1])
-            osignal = dataLine[2]
-            if ((oleft >= left and right > oleft) or (oright >= left and oright < right)) and (osignal == signal):
+            ocontig = dataLine[0]
+            oleft = int(dataLine[1])
+            oright = int(dataLine[2])
+            osignal = dataLine[3]
+            if ((oleft >= left and right > oleft) or (oright >= left and oright < right)) and (osignal == signal) and (ocontig == contig):
                 flag = 1
                 flagArr[count] = 1
             count = count + 1

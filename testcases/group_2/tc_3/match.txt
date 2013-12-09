@@ -1,0 +1,12 @@
+1	7838	8723	insertion	NIL
+1	16412	17229	insertion	NIL
+1	24932	25794	insertion	NIL
+1	33463	34201	insertion	NIL
+1	41879	42663	insertion	NIL
+1	50330	51088	insertion	NIL
+1	58781	59598	insertion	NIL
+1	67255	68150	insertion	NIL
+1	75808	76601	insertion	NIL
+1	84280	85082	insertion	NIL
+1	92755	93558	insertion	NIL
+1	101233	102039	insertion	NIL
