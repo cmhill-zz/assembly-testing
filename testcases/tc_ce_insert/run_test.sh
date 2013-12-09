@@ -1,6 +1,5 @@
 #!/bin/bash
 
-python ../../src/ceStatistic.py ./output.sam ./ceValues
-python ../../src/ceOracle.py ./ceValues ./oracle.txt
+python ../../src/ceOracle.py ./output.sam 100 150 1
 
 exit 0
