@@ -8,37 +8,52 @@ from ceStatistic import CEStatistic
 
 
 #fInput = open(sys.argv[1], 'r')
-winSize = (int(sys.argv[2]))
-winStep = (int(sys.argv[3]))
-statThreshold = (float(sys.argv[4]))
-testThreshold = (float(sys.argv[5]))
+
+oracle = './oracle.txt'
+fOracle = open(oracle, 'r')
+fResults = open('./results.txt', 'r')
+
+testThreshold = int(sys.argv[2])
+
+totScores = 0
+sumScores = 0
+
+scores = {}
+results = []
 
 
 
-ce = CEStatistic(sys.argv[1], winSize, winStep, statThreshold)
-misassemblies = ce.getMisassemblies()
-oracle = './oracle.txt';
-fOracle = open(oracle, 'r');
+
+for line in fResults:
+    data = line.split()
+    contig_name = data[0]
+    start = int(data[1])
+    end = int(data[2])
+    error_type = data[3]
+    confidence_value = data[4]
+    results.append( (contig_name, start, end) )
 
 
-totScores = 0;
-sumScores = 0;
 
-scores = {};
- 
 for line in fOracle:
-    data = line.split('\t')
+    data = line.split()
     index = int(data[0])
     length = int(data[1])
     mod = data[2].strip()
     done = False
+    
+
     for i in range(index-testThreshold*length, index+testThreshold*length):
         if done:
             break;
-        for m in misassemblies:
-            if i in range(m.getStart(), m.getEnd()):
-                print "Correctly Found Error at %d!" % index
+        for m in results:
+            if i in range(m[1], m[2]):
+                #print "Correctly Found Error at %d!" % index
                 done = True
                 break;
     if not done:
-        print "Failed to find insertion at %d" % (index)
+        #print "Failed to find insertion at %d" % (index)
+        exit(1)
+
+
+exit(0)
