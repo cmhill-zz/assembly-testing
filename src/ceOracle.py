@@ -4,12 +4,21 @@ import sys
 import os
 import math
 import re
-input = 'ceValues'
-fInput = open(sys.argv[1], 'r')
+from ceStatistic import CEStatistic
 
 
+#fInput = open(sys.argv[1], 'r')
+winSize = (int(sys.argv[2]))
+winStep = (int(sys.argv[3]))
+statThreshold = (float(sys.argv[4]))
+testThreshold = (float(sys.argv[5]))
+
+
+
+ce = CEStatistic(sys.argv[1], winSize, winStep, statThreshold)
+misassemblies = ce.getMisassemblies()
 oracle = './oracle.txt';
-fOracle = open(sys.argv[2], 'r');
+fOracle = open(oracle, 'r');
 
 
 totScores = 0;
@@ -17,37 +26,19 @@ sumScores = 0;
 
 scores = {};
  
-
-for line in fInput:
-    data = line.split('\t');
-    score = float(data[2]);
-    point = int(data[0]);
-    scores[point] = score
-
-
 for line in fOracle:
     data = line.split('\t')
     index = int(data[0])
     length = int(data[1])
     mod = data[2].strip()
-    
-    for i in range(index-4*length, index+4*length):
-
-        if mod == 'i':
-            if i in scores:
-                if(scores[i] < 1.5):
-                    print "Correctly Found Insertion at %d!" % i
-                    break;
-                if(scores[i] > 1.5):
-                    print "Correctly Found Error at %d!" % i
-                    break;
-        else:
-            if i in scores:
-                if(scores[i] > 1.5):
-                    print "Correctly Found Deletion at %d!" % i
-                    break;
-                
-                if(scores[i] < 1.5):
-                    print "Correctly Found Error at %d!" % i
-                    break;
-                
+    done = False
+    for i in range(index-testThreshold*length, index+testThreshold*length):
+        if done:
+            break;
+        for m in misassemblies:
+            if i in range(m.getStart(), m.getEnd()):
+                print "Correctly Found Error at %d!" % index
+                done = True
+                break;
+    if not done:
+        print "Failed to find insertion at %d" % (index)
