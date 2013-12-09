@@ -4,5 +4,6 @@ python ../../src/matePairAnalysis.py --ce --fasta delTest.fasta -1 r1.fq -2 r2.f
 rm *.bam
 rm *.sam
 rm *.bai
+python ../../src/ceOracle.py results.txt 1
 
 exit $?
