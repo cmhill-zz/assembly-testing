@@ -1,0 +1,5 @@
+4	1272	1469	deletion	NIL
+1	639	1757	insertion	NIL
+3	2280	3256	insertion	NIL
+2	1175	2274	insertion	NIL
+5	1916	3177	insertion	NIL
