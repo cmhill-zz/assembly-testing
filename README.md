@@ -62,10 +62,6 @@ The algorithm is is as follows:
 
 ### Usage ###
 
-Since, the Gaussian Constraint is one of the many algorithms we are trying to find mis-assemblies, we have a python file which marks segment in the
- genome and it takes 3 arguments, the location of the sam file, the location of the output file where you want to write the regions of the mis-assembly 
-and the read read length of the assembly, the function call is as follows:
-
 In order to use the tool, you need to provide the assembly file and the read files which contain mate pair information. For using the 
 gaussian constraint to detect mis assemblies, you need to provide the --gau flag. If you feel that not many mis-assembles are detected, increase
 the gau_multiplier for more detections. If you feel that some detections are incorrect, reduce gau_multipler. The default value used is 4
