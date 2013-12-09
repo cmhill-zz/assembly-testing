@@ -1,15 +1,18 @@
 # This file reads a sam file, and computes the C/E Statistic
 
-import sys
 import os
 import math
 import re
 from read import Read
 
 #change this to read from ARGV
-input = sys.argv[1];
-windowSize = 25000
-windowStep = 10000
+input = './trial2.sam';
+writeLocation = './t1.sam';
+windowSize = 100
+windowStep = 10
+
+
+
 
 
 fInput = open(input, 'r');
@@ -43,7 +46,6 @@ def doCEStat(reads, libAvgLen, libAvgStd):
 
 
 def doWindow(start, end, reads, libAvg, libStd):
-    print "window end %d" % (end)
     window = []
     for r in positions:
         if readArray[r].getPos() in range(start, end):
@@ -112,7 +114,7 @@ print(maximum)
 for i in range(0-windowSize, maximum+windowSize, windowStep):
     doWindow(i, i+windowSize, readArray, meanDistance, standardDeviation);
 
-output = open(sys.argv[2], 'w')
+output = open('./ceValues', 'w')
 vals = sorted(zScores.keys())
 for v in vals:
     if(v >= 0):
