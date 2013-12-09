@@ -1,0 +1,12 @@
+1	7760	8749	ceStatistic	None
+1	16383	17292	ceStatistic	None
+1	24872	25792	ceStatistic	None
+1	33352	34198	ceStatistic	None
+1	41803	42682	ceStatistic	None
+1	50253	51099	ceStatistic	None
+1	58759	59574	ceStatistic	None
+1	67153	68198	ceStatistic	None
+1	75757	76638	ceStatistic	None
+1	84166	85089	ceStatistic	None
+1	92652	93591	ceStatistic	None
+1	101159	102098	ceStatistic	None
