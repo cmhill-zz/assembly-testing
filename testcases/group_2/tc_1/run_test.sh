@@ -1,7 +1,7 @@
 #!/bin/bash
 
-python ../../src/matePairAnalysis.py --ce --fasta delTest.fasta -1 r1.fq -2 r2.fq --ce_threshold 1.2 --ce_windowsize 150 --ce_windowstep 100 > results.txt
+python ../../../src/matePairAnalysis.py --ce --fasta delTest.fasta -1 r1.fq -2 r2.fq --ce_threshold 1.2 --ce_windowsize 150 --ce_windowstep 100 > match.txt
 rm *.bam *.sam *.bai &> /dev/null
-python ../../src/ceOracle.py results.txt 1
+python eval_ce_del.py
 
 exit $?
