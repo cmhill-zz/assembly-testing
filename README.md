@@ -28,9 +28,9 @@ optional arguments:
                         fasta file name holding genome reference sequences
   -1 READFILE1          first part of the mate-pair reads
   -2 READFILE2          second part of the mate-pair reads
-  --gmb                 if present, do only good minus bad analysis.
-  --ce                  if present, do only ce Statistic
-  --gau                 if present, do only gaussian analysis
+  --gmb                 if present, do good minus bad analysis
+  --ce                  if present, do ce Statistic
+  --gau                 if present, do gaussian analysis
 ```
 
 ## C/E Statistic ##
