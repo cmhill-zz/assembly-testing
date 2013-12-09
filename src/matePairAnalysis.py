@@ -13,7 +13,10 @@ def createSAM(fastaFileName, reads1, reads2, baseName, samFileName):
         else:
             os.system("bowtie2 -x %s -1 %s -2 %s -S %s &> /dev/null" % (baseName, reads1, reads2, samFileName))
     else:
-        os.system("bowtie2 -x %s -1 %s -2 %s -S %s.sam &> /dev/null" % (baseName, reads1, reads2, samFileName))
+        if reads1.endswith(".fasta"):
+            os.system("bowtie2 -f -x %s -1 %s -2 %s -S %s.sam &> /dev/null" % (baseName, reads1, reads2, samFileName))
+        else:
+            os.system("bowtie2 -x %s -1 %s -2 %s -S %s.sam &> /dev/null" % (baseName, reads1, reads2, samFileName))
 
     os.system("rm %s.*" % (baseName,))
 
@@ -54,6 +57,10 @@ parser.add_argument("-2", dest="readFile2", required=True, help="second part of 
 parser.add_argument("--gmb", dest="gmb", action="store_true", help="if present, do only good minus bad analysis.")
 parser.add_argument("--ce", dest="ce", action="store_true", help="if present, do only ce Statistic")
 parser.add_argument("--gau", dest="gau", action="store_true", help="if present, do only gaussian analysis")
+parser.add_argument("--gau_multiplier", dest="multiplier", default=4, type=int, help="this is used in gau analysis. it is the variance multiplier.")
+parser.add_argument("--ce_windowsize", dest="windowSize", default=150, type=int, help="this is used in ce analysis.")
+parser.add_argument("--ce_windowstep", dest="windowStep", default=100, type=int, help="this is used in ce analysis.")
+parser.add_argument("--ce_threshold", dest="threshold", default=1.2, type=float, help="this is used in ce analysis.")
 
 args = parser.parse_args()
 
@@ -82,12 +89,12 @@ if args.gmb:
 
 if args.gau:
     import gaussianCheck
-    gaussianErrorList = gaussianCheck.gCk(randomNamesDict["samFileName"])
+    gaussianErrorList = gaussianCheck.gCk(randomNamesDict["samFileName"], args.multiplier)
     misassemblyRegionList.extend(gaussianErrorList)
 
 if args.ce:
     import ceStatitic
-    ce = ceStatistic.CE()
+    ce = ceStatistic.CE(randomNamesDict["samFileName"], args.windowSize, args.windowStep, args.threshold)
     ce_result = ce.doCEStatistic(args.fastaFileName, args.ce)
     misassemblyRegionList.extend(ce_result)
 
