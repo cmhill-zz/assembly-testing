@@ -17,6 +17,10 @@ Below is how to execute our software:
 ```
 usage: matePairAnalysis.py [-h] --fasta FASTAFILENAME -1 READFILE1 -2
                            READFILE2 [--gmb] [--ce] [--gau]
+                           [--gau_multiplier MULTIPLIER]
+                           [--ce_windowsize WINDOWSIZE]
+                           [--ce_windowstep WINDOWSTEP]
+                           [--ce_threshold THRESHOLD]
 
 Software to find misassemblies by doing mate-pair analysis. If any of the
 analysis flag is provided, only those analysis will be executed. Otherwise,
@@ -28,10 +32,21 @@ optional arguments:
                         fasta file name holding genome reference sequences
   -1 READFILE1          first part of the mate-pair reads
   -2 READFILE2          second part of the mate-pair reads
-  --gmb                 if present, do good minus bad analysis
-  --gau_multiplier	if is the present, it changes the window in which the next mate pair should be found
-  --ce                  if present, do ce Statistic
-  --gau                 if present, do gaussian analysis
+  --gmb                 if present, do only good minus bad analysis.
+  --ce                  if present, do only ce Statistic
+  --gau                 if present, do only gaussian analysis
+  --gau_multiplier MULTIPLIER
+                        this is used in gau analysis. it changes the window in
+                        which the next mate pair should be found. Default is 4
+  --ce_windowsize WINDOWSIZE
+                        This is used in CE Statistic; controls the window size
+                        for the moving window average. Default is 150
+  --ce_windowstep WINDOWSTEP
+                        this is used in CE Statistic; controls the window step
+                        size for the moving window average. Default is 100
+  --ce_threshold THRESHOLD
+                        this is used in CE Statistic; controls the theshold
+                        for marking regions as bad. Default is 1.2
 ```
 
 ## C/E Statistic ##
