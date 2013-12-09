@@ -76,6 +76,7 @@ stored in 'match.txt', results obtained by comparing 'match.txt' and 'oracle.txt
 
 In the second test case(tc_2) insertions are made in the genomic sequence; CE Statistic is run with the threshold set to 2.5.
 
+It takes several minutes to run the CE Statistic Test Cases on a 1.3Ghz Processor. 
 
 ## Gaussian Constraint ##
 ### Algorithm ###
