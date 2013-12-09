@@ -8,7 +8,10 @@ import time
 def createSAM(fastaFileName, reads1, reads2, baseName, samFileName):
     os.system("bowtie2-build %s %s &> /dev/null" % (fastaFileName, baseName))
     if samFileName.endswith(".sam"):
-        os.system("bowtie2 -x %s -1 %s -2 %s -S %s &> /dev/null" % (baseName, reads1, reads2, samFileName))
+        if reads1.endswith(".fasta"):
+            os.system("bowtie2 -f -x %s -1 %s -2 %s -S %s &> /dev/null" % (baseName, reads1, reads2, samFileName))
+        else:
+            os.system("bowtie2 -x %s -1 %s -2 %s -S %s &> /dev/null" % (baseName, reads1, reads2, samFileName))
     else:
         os.system("bowtie2 -x %s -1 %s -2 %s -S %s.sam &> /dev/null" % (baseName, reads1, reads2, samFileName))
 

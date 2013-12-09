@@ -10,10 +10,7 @@ def gCk(samLocation):
 
     inputFile = open(samLocation, 'r');
 
-    tmp = inputFile.readline();
-    tmp = inputFile.readline();
-    tmp = inputFile.readline();
-
+    
     matePairDistanceSum = 0;
     matePairLengthArray = [];
 
@@ -21,22 +18,29 @@ def gCk(samLocation):
 
     prevLocation = 0
     prevLen = 0
+
+    readCount = 0
+    avgReadLength = 0
+
     for lines in inputFile:
         data = lines.split('\t');
+        if len(data) < 9:
+            continue
         length = math.fabs(int(data[8]));
         signLength = int(data[8])
         location = int(data[7])
-        if (prevLen > 0 and length == prevLen):
-            readLength = length - math.fabs(location - prevLocation)
         #do not count pairs which are not found and those which are too out of place
         #we know that insert length cannot be greater than 1000
-        if signLength > 0 and signLength < 500:
+        if signLength > 0 and signLength < 1000:
+            avgReadLength = avgReadLength + len(data[9])
+            readCount = readCount + 1
             matePairDistanceSum = matePairDistanceSum + length;
             matePairLengthArray.append(length);
             numValidPoints = numValidPoints + 1;
         prevLocation = location
         prevLen = length
  
+    avgReadLength = avgReadLength/readCount
     meanDistance = float(matePairDistanceSum)/(numValidPoints);
 #    print(readLength)
 #    print(numValidPoints)
@@ -56,11 +60,7 @@ def gCk(samLocation):
     #start processing again to mark locations which are bad
     inputFile = open(samLocation, 'r');
 
-    tmp = inputFile.readline();
-    tmp = inputFile.readline();
-    tmp = inputFile.readline();
-
-    dev = max(readLength, int(math.ceil(3*standardDeviation)))
+    dev = max(avgReadLength, int(math.ceil(4*standardDeviation)))
     minLength = int(meanDistance) - dev;
     maxLength = int(meanDistance) + dev;
 
@@ -73,6 +73,8 @@ def gCk(samLocation):
 
     for lines in inputFile:
         data = lines.split('\t');
+        if len(data) < 9:
+            continue
         signLength = int(data[8]);
         length = math.fabs(int(data[8]));
         location = int(data[7]);
@@ -83,31 +85,42 @@ def gCk(samLocation):
         if location == 0:
             count = count + 1;
             continue;
-        
+
         #now we only need to check for mate pairs whose distance is greater than zero
-        if signLength > 0 and (length < minLength or length > maxLength):
+        if signLength > 0 and (length < minLength or length > maxLength) and (length < 3*meanDistance):
             if length > meanDistance:
                 if contig in badInsertInterval.keys():
-                    badInsertInterval[contig].append([location - length + readLength, location])
+                    badInsertInterval[contig].append([location - length + len(data[9]), location + len(data[9])])
                 else:
-                    badInsertInterval[contig] = [[location - length + readLength, location]];
+                    badInsertInterval[contig] = [[location - length + len(data[9]), location + len(data[9])]];
             else:
                 if contig in badDeleteInterval.keys():
-                    badDeleteInterval[contig].append([location - length + readLength, location])
+                    badDeleteInterval[contig].append([location - length + len(data[9]), location + len(data[9])])
                 else:
-                    badDeleteInterval[contig] = [[location - length + readLength, location]];
+                    badDeleteInterval[contig] = [[location - length + len(data[9]), location + len(data[9])]];
+        elif (length > 3*meanDistance):
+            if signLength > 0:
+                if contig in badInsertInterval.keys():
+                    badInsertInterval[contig].append([location, location + len(data[9])])
+                else:
+                    badInsertInterval[contig] = [[location, location + len(data[9])]]
+            else:
+                if contig in badInsertInterval.keys():
+                    badInsertInterval[contig].append([location, location + len(data[9])])
+                else:
+                    badInsertInterval[contig] = [[location, location + len(data[9])]]
         count = count + 1;
 
     inputFile.close();
     out = open('match.txt', 'w')
 
     for contigs in badInsertInterval.keys():
-        if (len(badInsertInterval[contig]) > 0):
-            badInsertInterval[contig] = merge(badInsertInterval[contig])
+        if (len(badInsertInterval[contigs]) > 0):
+            badInsertInterval[contigs] = merge(badInsertInterval[contigs])
 
     for contigs in badDeleteInterval.keys():
-        if (len(badDeleteInterval[contig]) > 0):
-            badDeleteInterval[contig] = merge(badDeleteInterval[contig])
+        if (len(badDeleteInterval[contigs]) > 0):
+            badDeleteInterval[contigs] = merge(badDeleteInterval[contigs])
 
 #    print('Start of artificial test case, gaussian constraint')
 #    print('\n')
@@ -117,14 +130,16 @@ def gCk(samLocation):
     for contigs in badDeleteInterval.keys():
         for intervals in badDeleteInterval[contigs]:
             out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\td\n')
-            misassemblyRegions.append(mr.MisassemblyRegion(contigs, str(int(intervals[0])), str(int(intervals[1])), "deletion"))
-#            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tdeletion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + readLength)+ '\tNIL')
+#            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tdeletion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + avgReadLength)+ '\tNIL\n')
+            misassemblyRegions.append(mr.MisassemblyRegion(contigs, int(intervals[0]), int(intervals[1]), "deletion"))
+
 
     for contigs in badInsertInterval.keys():
         for intervals in badInsertInterval[contigs]:
             out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\ti\n')
-            misassemblyRegions.append(mr.MisassemblyRegion(contigs, str(int(intervals[0])), str(int(intervals[1])), "insertion"))
-#            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tinsertion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + readLength) + '\tNIL')
+#            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tinsertion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + avgReadLength) + '\tNIL')
+            misassemblyRegions.append(mr.MisassemblyRegion(contigs, int(intervals[0]), int(intervals[1]), "insertion"))
+
 
     return misassemblyRegions
     out.close()
