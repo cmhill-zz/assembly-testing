@@ -10,10 +10,10 @@ class MisassemblyRegion():
         self.confidenceValue = confidenceValue
 
     def __repr__(self):
-        return "%s\t%s\t%s\t%s" % (self.rname, str(self.startPos), str(self.endPos), self.misassemblyType)
+        return "%s\t%s\t%s\t%s\t%s" % (self.rname, str(self.startPos), str(self.endPos), self.misassemblyType, self.confidenceValue)
 
     def __str__(self):
-        return "%s\t%s\t%s\t%s" % (self.rname, str(self.startPos), str(self.endPos), self.misassemblyType)
+        return "%s\t%s\t%s\t%s\t%s" % (self.rname, str(self.startPos), str(self.endPos), self.misassemblyType, self.confidenceValue)
 
     def getRegionLength(self):
         return self.endPos - self.startPos + 1

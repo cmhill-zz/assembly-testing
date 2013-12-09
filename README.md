@@ -16,9 +16,10 @@ We have dependencies on following tools/packages:
 Below is the template of main usage of our tool. This time it only executes good-minus-bad analysis; however, it will execute rest of the analysis soon.
 ```
 usage: matePairAnalysis.py [-h] --fasta FASTAFILENAME -1 READFILE1 -2
-                           READFILE2 [--gmb] [-ce]
+                           READFILE2 [--gmb] [--ce] [--gau]
 
-Software to find misassemblies by doing mate-pair analysis
+Software to find misassemblies by doing mate-pair analysis. If you do not
+provide any of the analysis flags, all of the analysis will be executed.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -26,8 +27,9 @@ optional arguments:
                         fasta file name holding genome reference sequences
   -1 READFILE1          first part of the mate-pair reads
   -2 READFILE2          second part of the mate-pair reads
-  --gmb			if present, do good minus bad analysis.
-  --ce			if present, do ce statistics.
+  --gmb                 if present, do only good minus bad analysis.
+  --ce                  if present, do only ce Statistic
+  --gau                 if present, do only gaussian analysis
 ```
 
 ## C/E Statistic ##
@@ -108,9 +110,10 @@ Finally, we take negative scored regions as low scored regions. That is, negativ
 As mentioned in the beginning of this document, good-minus-bad analysis can be executed in following way:
 ```
 usage: matePairAnalysis.py [-h] --fasta FASTAFILENAME -1 READFILE1 -2
-                           READFILE2 [--gmb BAMFILENAME]
+                           READFILE2 [--gmb] [--ce] [--gau]
 
-Software to find misassemblies by doing mate-pair analysis
+Software to find misassemblies by doing mate-pair analysis. If you do not
+provide any of the analysis flags, all of the analysis will be executed.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -118,8 +121,9 @@ optional arguments:
                         fasta file name holding genome reference sequences
   -1 READFILE1          first part of the mate-pair reads
   -2 READFILE2          second part of the mate-pair reads
-  --gmb			if present, do good minus bad analysis.
-  --ce			if present, do ce statistics.
+  --gmb                 if present, do only good minus bad analysis.
+  --ce                  if present, do only ce Statistic
+  --gau                 if present, do only gaussian analysis
 ```
 
 ### Test cases ###
@@ -134,14 +138,15 @@ In the second test (tc_gmb_2), we do inversion on single long region (compared t
 In the third test (tc_gmb_3), we do inversion on multiple regions; more specifically, 3 regions. In other feasibility good-minus-bad analysis test cases (tc_gmb_1 and tc_gmb_2), we tested on a single region. By inverting multiple regions, we test whether having more than one inversion have negative effect on our analysis.
 
 ## Output Format ##
-We are considering to output 4 tab-seperated columns. First column will be the name of the reference where the misassembly occured. Second and third column will refer to leftmost and rightmost base pair locations, respectively. Finally, fourth column refers to type of the misassembly in this region. An example output would look like below:
+We are considering to output 5 tab-seperated columns. First column will be the name of the reference where the misassembly occured. Second and third column will refer to leftmost and rightmost base pair locations, respectively. Note that second column is inclusive whereas third column is exclusive. Fourth column refers to type of the misassembly in this region. Fifth column holds the value for the confidence in that misassembly region finding. Last column is only meaningful for breakpoint analysis group. We fill this column regardless to be consistent with other groups. An example output for mate-pair analysis would look like below:
 ```
-gi|9626243|ref|NC_001416.1|     19950   20650   inversion
-gi|9626243|ref|NC_001416.1|     29960   30310   inversion
-gi|9626243|ref|NC_001416.1|     45010   45430   inversion
+gi|9626243|ref|NC_001416.1|     19928   22086   inversion       None
+gi|9626243|ref|NC_001416.1|     36121   36279   inversion       None
+gi|9626243|ref|NC_001416.1|     37523   37628   inversion       None
+gi|9626243|ref|NC_001416.1|     37630   37632   inversion       None
 ```
 
-We picked this format since it will allow us to easily merge misassembly regions from our different analysis tools. However, we are still thinking over adding new columns that might help us attribute confidence measures to misassembly regions.
+We picked this format since it will allow us to easily merge misassembly regions from our different analysis tools. 
 
 ## References ##
 1. Sun Kim, Li Liao, Michael P. Perry Shiping Zhang and Jean-Francois Tomb. A computational approach to sequence assembly validation

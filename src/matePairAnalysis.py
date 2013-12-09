@@ -45,13 +45,14 @@ def createRandomNamesDict():
 
     return randomNamesDict
 
-parser = argparse.ArgumentParser(description="Software to find misassemblies by doing mate-pair analysis")
+parser = argparse.ArgumentParser(description="Software to find misassemblies by doing mate-pair analysis." +
+                                 " If you do not provide any of the analysis flags, all of the analysis will be executed.")
 parser.add_argument("--fasta", dest="fastaFileName", required=True, help="fasta file name holding genome reference sequences")
 parser.add_argument("-1", dest="readFile1", required=True, help="first part of the mate-pair reads")
 parser.add_argument("-2", dest="readFile2", required=True, help="second part of the mate-pair reads")
-parser.add_argument("--gmb", dest="gmb", action="store_true", help="if present, do good minus bad analysis.")
-parser.add_argument("--ce", dest="ce", action="store_true", help="if present, do ce Statistic")
-parser.add_argument("--gau", dest="gau", action="store_true", help="if present, do gaussian analysis")
+parser.add_argument("--gmb", dest="gmb", action="store_true", help="if present, do only good minus bad analysis.")
+parser.add_argument("--ce", dest="ce", action="store_true", help="if present, do only ce Statistic")
+parser.add_argument("--gau", dest="gau", action="store_true", help="if present, do only gaussian analysis")
 
 args = parser.parse_args()
 
@@ -65,6 +66,12 @@ createSAM(args.fastaFileName, args.readFile1, args.readFile2, randomNamesDict["b
 createBAM(randomNamesDict["samFileName"], randomNamesDict["bamFileName"])
 createSortedBAM(randomNamesDict["bamFileName"], randomNamesDict["sortedBamFileNamePrefix"])
 createBAI(randomNamesDict["sortedBamFileName"])
+
+# If non of the flags are set, set all the flags
+if not (args.gmb or args.gau or args.ce):
+    args.gmb = True
+    args.gau = True
+    args.ce = True
 
 misassemblyRegionList = []
 if args.gmb:
