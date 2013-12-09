@@ -87,7 +87,7 @@ def gCk(samLocation):
             continue;
 
         #now we only need to check for mate pairs whose distance is greater than zero
-        if signLength > 0 and (length < minLength or length > maxLength) and (length < 3*meanDistance):
+        if signLength > 0 and (length < minLength or length > maxLength) and (length < 5*meanDistance):
             if length > meanDistance:
                 if contig in badInsertInterval.keys():
                     badInsertInterval[contig].append([location - length + len(data[9]), location + len(data[9])])
@@ -98,7 +98,7 @@ def gCk(samLocation):
                     badDeleteInterval[contig].append([location - length + len(data[9]), location + len(data[9])])
                 else:
                     badDeleteInterval[contig] = [[location - length + len(data[9]), location + len(data[9])]];
-        elif (length > 3*meanDistance):
+        elif (length > 5*meanDistance):
             if signLength > 0:
                 if contig in badInsertInterval.keys():
                     badInsertInterval[contig].append([location, location + len(data[9])])
@@ -131,14 +131,14 @@ def gCk(samLocation):
         for intervals in badDeleteInterval[contigs]:
             out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\td\n')
 #            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tdeletion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + avgReadLength)+ '\tNIL\n')
-            misassemblyRegions.append(mr.MisassemblyRegion(contigs, int(intervals[0]), int(intervals[1]), "deletion"))
+            misassemblyRegions.append(mr.MisassemblyRegion(contigs, int(intervals[0]), int(intervals[1]), "deletion", "NIL"))
 
 
     for contigs in badInsertInterval.keys():
         for intervals in badInsertInterval[contigs]:
             out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\ti\n')
 #            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tinsertion, found by mate pair (distance) ' + str(intervals[1] - intervals[0] + avgReadLength) + '\tNIL')
-            misassemblyRegions.append(mr.MisassemblyRegion(contigs, int(intervals[0]), int(intervals[1]), "insertion"))
+            misassemblyRegions.append(mr.MisassemblyRegion(contigs, int(intervals[0]), int(intervals[1]), "insertion", "NIL"))
 
 
     return misassemblyRegions
