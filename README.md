@@ -50,7 +50,7 @@ optional arguments:
 ```
 
 ## CE Statistic ##
-### Algorithm ### 
+### Algorithm ###
 The algorithm is as follows:
 
 1. Given the reads, align the reads with the assembled genome using bowtie2
