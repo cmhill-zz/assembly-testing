@@ -106,7 +106,6 @@ class CEStatistic:
         #print "The Library Standard Dev size is: %f" % (standardDeviation)
         #print "The libLenCount is: %f" % (self.libLenCount)
         
-        output = open(sys.argv[2], 'w')
         positions = {}
         
         doingMisassembly = False #whether or not we have found the beginning of a misassembled region
