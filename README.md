@@ -52,6 +52,7 @@ optional arguments:
 ## C/E Statistic ##
 ### Algorithm ### 
 The algorithm is as follows:
+
 1) Given the reads, align the reads with the assembled genome using bowtie2
 2) Once the alignment has been made, compute the global mean (M), and the global standard deviation (S)
 3) Loop through the assembly, computing the implied average length (u); and count the number of inserts in the region (N)
