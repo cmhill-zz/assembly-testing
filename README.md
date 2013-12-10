@@ -49,16 +49,16 @@ optional arguments:
                         for marking regions as bad. Default is 2.5
 ```
 
-## C/E Statistic ##
+## CE Statistic ##
 ### Algorithm ### 
 The algorithm is as follows:
 
-1) Given the reads, align the reads with the assembled genome using bowtie2
-2) Once the alignment has been made, compute the global mean (M), and the global standard deviation (S)
-3) Loop through the assembly, computing the implied average length (u); and count the number of inserts in the region (N)
-4) Compute the Z statistic: Z = (M-u)/(S/sqrt(N)) for each insert in the region. 
-5) Average all of the Z scores that each insert received. 
-6) Make a final pass, marking the inserts that have Z values less than -1*threshold as potential areas of deletion, and areas with Z values greater than threshold as potential insertions.
+1. Given the reads, align the reads with the assembled genome using bowtie2
+2. Once the alignment has been made, compute the global mean (M), and the global standard deviation (S)
+3. Loop through the assembly, computing the implied average length (u); and count the number of inserts in the region (N)
+4. Compute the Z statistic: Z = (M-u)/(S/sqrt(N)) for each insert in the region. 
+5. Average all of the Z scores that each insert received. 
+6. Make a final pass, marking the inserts that have Z values less than -1*threshold as potential areas of deletion, and areas with Z values greater than threshold as potential insertions.
 
 
 ### C/E Statistic Test Cases ###
