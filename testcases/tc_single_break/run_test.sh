@@ -16,7 +16,7 @@ python ../../breakpoint-detection/generate_unaligned.py  ../../data/buchnera/300
 
 
 #attempt to align 
-python ../../breakpoint-detection/breakpoint_indices.py -a ../../data/buchnera/3000/buchnera-udp.assembly.fasta -u singleUnaligned.txt -o errorDetected.txt --alpha 20
+python ../../breakpoint-detection/breakpoint_indices.py -a ../../data/buchnera/3000/buchnera-udp.assembly.fasta -u singleUnaligned.txt -o errorDetected.txt --alpha 20 --algorithm naive
 
 rm -f singleUnaligned.txt
 rm -f singleErrorAssembly.fasta

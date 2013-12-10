@@ -1,5 +1,3 @@
-#!/bin/bash
-
 #Generate assembly on short original with one error (2000 out of 3000)
 python ../../errorgenerator/errorgen.py -a ../../data/buchnera/3000/buchnera-udp.assembly.fasta -o singleErrorAssembly.fasta -m singleErrorMetadata.txt -e 2000 -l 200
 
@@ -17,7 +15,7 @@ python ../../breakpoint-detection/generate_unaligned.py  ../../data/buchnera/300
 
 
 #attempt to align 
-python ../../breakpoint-detection/breakpoint_indices.py -a ../../data/buchnera/3000/buchnera-udp.assembly.fasta -u singleUnaligned.txt -o errorDetected.txt --alpha 20
+python ../../breakpoint-detection/breakpoint_indices.py -a ../../data/buchnera/3000/buchnera-udp.assembly.fasta -u singleUnaligned.txt -o errorDetected.txt --alpha 20 --algorithm naive
 
 rm -f singleUnaligned.txt
 rm -f singleErrorAssembly.fasta

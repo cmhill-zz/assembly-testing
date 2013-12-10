@@ -9,6 +9,7 @@ python breakpoint_indices.py -a ../../data/influenza-A/influenza-A.assembly.fast
 
 import sys
 from optparse import OptionParser
+from math import sqrt, pi, exp
 
 
 #reads an assembly from a FASTA file as one contiguous string. Returns said string.
@@ -120,15 +121,87 @@ def naiveBreakpointDetect(singletons,assembly,alpha,outputFile=None):
 
 	return matchArray
 
+# generates a gaussian filter of size n with stdev 1
+def gauss(n,sigma):
+    r = range(-int(n/2),int(n/2)+1)
+    return [1 / (sigma * sqrt(2*pi)) * exp(-float(x)**2/(2*sigma**2)) for x in r]
+
+# given an array of numbers, an index at which to add the gaussian,
+# the size of the window, and the stdev of the gaussian
+# returns the array with the gaussian added
+def addGaussian(arr,index,n,sigma):
+	gaussian = gauss(n,sigma)
+	startInd = index - (int(n/2))
+	endInd = index + (int(n/2))
+
+	gaussianCenter = int(n/2)
+
+	for i in range(gaussianCenter):
+		distance = gaussianCenter - i
+		arrayIndex = index-distance
+		if arrayIndex > 0 and arrayIndex < len(arr):
+			arr[arrayIndex]+=gaussian[i]
+
+	for i in range(gaussianCenter,len(gaussian)):
+		distance = gaussianCenter - i
+		arrayIndex = index-distance
+		if arrayIndex > 0 and arrayIndex < len(arr):
+			arr[arrayIndex]+=gaussian[i]		
+
+	return arr
+
+
+# given a list of singletons, an assembly, and a windowsize alpha
+# returns an array where each index represents the number of singletons that match at that point
+# with that alpha
+def gaussianBreakpointDetect(singletons,assembly,alpha,n,sigma,outputFile=None):
+	try:
+		n = int(n)
+	except:
+		print 'n was: '+str(n)
+		raw_input()
+		sys.exit()
+
+	#initialize empty array
+	matchArray = []
+	for i in range(len(assembly)):
+		matchArray.append(0)
+
+	#for each singleton, increment matchArray everywhere a singleton matches
+	i=1
+	for s in singletons:
+		print 'Processing singleton ' + str(i) + ' of ' + str(len(singletons))
+		matchIndices = matchSingleton(s,assembly,alpha)
+		for index in matchIndices:
+			addGaussian(matchArray,index,n,sigma)
+		i+=1
+
+	if outputFile != None:
+		outputStream = open(outputFile,'w')
+
+		outputStream.write("Alpha = "+str(alpha)+"\n")
+		outputStream.write("Errors detected at:\n")
+		for i in range(len(matchArray)):
+			if matchArray[i] > 0:
+				outputStream.write("\t"+str(i)+"\t"+str(matchArray[i])+"\n")
+
+		outputStream.close()
+
+
+	return matchArray
+
 
 
 
 def Main():
 	parser = OptionParser()
+	parser.add_option("--algorithm",dest = "algorithm")
 	parser.add_option("-a","--assembly-file", dest = "assembly_file")
 	parser.add_option("-u","--unaligned-file",dest = "unaligned_file")
 	parser.add_option("--alpha",dest = "alpha")
 	parser.add_option("-o","--output-file",dest = "output_file")
+	parser.add_option("--gauss-window",dest = "gauss_window")
+	parser.add_option("--sigma",dest = "sigma")
 
 	(options, args) = parser.parse_args()
 
@@ -162,8 +235,29 @@ def Main():
 
 	print 'Successfully read %d singletons' % len(singletons)
 
+	n = int(options.gauss_window)
+	sigma = float(options.sigma)
+	
+
 	#match singletons to assembly
-	matchArray = naiveBreakpointDetect(singletons,assemblyString,alpha,output_file)
+	if options.algorithm == "naive":
+		matchArray = naiveBreakpointDetect(singletons,assemblyString,alpha,output_file)
+	elif options.algorithm == "window":
+		if not options.gauss_window:
+			print 'Provide --gauss-window'
+			sys.exit()
+		if not options.sigma:
+			print 'Provide --sigma'
+			sys.exit()
+
+		print n
+		raw_input()
+
+		matchArray = gaussianBreakpointDetect(singletons,assemblyString,alpha,n,sigma,output_file)
+	else:
+		print '--algorithm must be naive or window'
+		print options.algorithm
+		sys.exit()
 
 
 
