@@ -71,7 +71,7 @@ class GoodMinusBadScorer:
                 
         # Find the rightmost position of the mate-pair
         endPos = startPos + abs(read.tlen)
-        assert(startPos < endPos)
+        assert(startPos <= endPos)
 
         return (startPos, endPos)
 
@@ -128,14 +128,14 @@ class GoodMinusBadScorer:
             if end == 0:
                 return 0
             
-            while start != end:
+            while start < end:
                 mid = (start + end) / 2
                 range = partitionedRangeList[mid]
 
                 if readRange[1] <= range[0]:
                     end = mid
                 elif range[1] <= readRange[0]:
-                    start = mid
+                    start = mid + 1
                 else:
                     break
 
