@@ -73,7 +73,7 @@ def errorWrite(messer):
         for point in messer.getErrorPoints():
             endpoint = messer.getErrorEndPoint(curIter)
             printDebug(point)
-            metaDataFile.write("%s\t%d\t%d\t%d\t%s\n" %(header,point,endpoint,100,"break"))
+            metaDataFile.write("%s\t%d\t%d\t%s\t%d\n" %(header,point,endpoint,"break",100))
             curIter+= 1
 	
     
