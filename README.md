@@ -1,151 +1,145 @@
-# CMSC737 - Assembly Model Testing #
+# CMSC737 - Mate-Pair Validation #
 
 ## Goal ##
-Design software to determine whether an assembly satisfies a set of constraints.
+Design software to determine whether an assembly satisfies a set of mate-pair constraints.
 
-## Motivation ##
-The genome sequence of an organism is a vital resource for biologists trying to better understand its function and evolution. Generating this sequence is not an easy task as modern sequencing technologies can only “read” small pieces of the genome. These sequences, known as *reads*, have to be pieced together by tools called assemblers using a collection of different heuristics since in almost all practical cases, **assemblers** cannot fully and accurately reconstruct the genome.
+## Dependencies ##
+You should install our dependencies to be able to run our software. We have dependencies on the following tools/packages:
 
-It is a very difficult job to evaluate the correctness of an assembly, but there are a few constraints that should hold up in the majority of cases.  Students will be given the task of creating tools that determine whether an assembly satisfies a given set of constraints.
+* python 2.7.3
+* numpy 1.7.1
+* Bowtie2 2.1.0
+* samtools 0.1.19
+* biopython 1.62
+* pysam 0.7.5
 
-## Background ##
-**READ FIRST!** http://www.cbcb.umd.edu/research/assembly_primer.shtml.  This will give you a better background than I ever could.  Below are a few terms that will be used frequently during this project.  Please notify me if you have any questions about the terms.
-
-### Sequence/read ###
-A single DNA sequence produced from some experiment. I will use sequence and read interchangeably.
-http://en.wikipedia.org/wiki/DNA_sequencing
-
-### FASTA ###
-A flat file to store DNA sequences in the format of “>header [newline] dna sequence”.  The DNA sequences are usually split every _X_ characters for readability purposes.  Each _>_ represents the start of a new record.  
-*The majority of your data will be in this format!*
+## Usage ##
+Below is how to execute our software:
 ```
->header_name
-ATCGTCAT
-AGGATACA
->second_header
-TTTCATTCC
+usage: matePairAnalysis.py [-h] --fasta FASTAFILENAME -1 READFILE1 -2
+                           READFILE2 [--gmb] [--ce] [--gau]
+                           [--gau_multiplier MULTIPLIER]
+                           [--ce_windowsize WINDOWSIZE]
+                           [--ce_windowstep WINDOWSTEP]
+                           [--ce_threshold THRESHOLD]
+
+Software to find misassemblies by doing mate-pair analysis. If any of the
+analysis flag is provided, only those analysis will be executed. Otherwise,
+all of the analysis will be executed. Our software writes its findings to
+standard output.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --fasta FASTAFILENAME
+                        fasta file name holding genome reference sequences
+  -1 READFILE1          first part of the mate-pair reads
+  -2 READFILE2          second part of the mate-pair reads
+  --gmb                 if present, do good minus bad analysis.
+  --ce                  if present, do ce Statistic
+  --gau                 if present, do gaussian analysis
+  --gau_multiplier MULTIPLIER
+                        this is used in gau analysis. it changes the window in
+                        which the next mate pair should be found. Default is 4
+  --ce_windowsize WINDOWSIZE
+                        This is used in CE Statistic; controls the window size
+                        for the moving window average. Default is 150
+  --ce_windowstep WINDOWSTEP
+                        this is used in CE Statistic; controls the window step
+                        size for the moving window average. Default is 100
+  --ce_threshold THRESHOLD
+                        this is used in CE Statistic; controls the theshold
+                        for marking regions as bad. Default is 2.5
 ```
-http://en.wikipedia.org/wiki/FASTA_format
 
-### Mate-pair ###
-In most sequencing projects, the sizes of the fragments generated through the shotgun process are carefully controlled, thus providing a link between the sequence reads generated from the ends of a same fragment (called paired-ends or mate-pairs).  The *insert* size is the end-to-end distance between the reads ( *length of both reads + distance separating the reads* ). length is often known beforehand (but it is possible to figure out empirically).
+## C/E Statistic ##
+### Algorithm ###
+The algorithm is as follows:
 
-### De novo assembly ###
-Assembling the data by only looking at the reads without using any prior known information about the genome (opposite of referenced-based assembly).
-
-### Contig ###
-Contiguous pieces of DNA.  
-http://en.wikipedia.org/wiki/Contig
-
-### SAM (Sequence Alignment/Map) format ###
-SAM format is a generic format for storing sequence alignments, e.g., from reads to assemblies/contigs/references/etc.
-
-http://samtools.sourceforge.net/
-
-http://samtools.sourceforge.net/SAMv1.pdf
-
- 
-## Constraints ##
-
-### Group 1: Read coverage ###
-Ideally, the sequencing process is uniform, producing reads uniformly at random from the underlying genome.  In other words, the number of times a basepair (bp) is covered by reads should be roughly the same across the assembly.  Regions of the assembly that have far deeper coverage than expected may be a repetitive sequence that has been compressed!
-
-**Students must find regions of the assembly where the average coverage exceeds a given threshold.**
-
-#### Input ####
-* Assembly ( _FASTA format_ )
-* Sequences ( _FASTA format_ )
-* Window size - calculate the average coverage for that window of sequence.
-* Standard deviations - cutoff stdev above the average to signal a mis-assembly.
-
-#### Output ####
-* Standard error:
- * Coverage statistics, window size.
-* Standard out:
- * Genomic windows where the average coverage is above the threshold.
-
-### Group 2: Mate-pair size agreement ###
-Mate-pairs from a sequencing library should be a predetermined distance apart in the assembly.  If this value varies greatly in the actual assembly, it may be the sign of a potential misassembly (potentially due to collapsed/expanded repeats).
-
-**Students must find regions of the assembly where the mate-pair size contraints are invalidated.**
-
-#### Input ####
-* Assembly ( _FASTA format_ )
-* Sequences ( _FASTA format_ )
-* Insert size ( _integer_ )
-* Standard deviations - Standard
- 
-#### Output ####
-* Reads that fail to align within the correct distance of each other and their corresponding genomic position.
+1. Given the reads, align the reads with the assembled genome using bowtie2
+2. Once the alignment has been made, compute the global mean (M), and the global standard deviation (S)
+3. Loop through the assembly, computing the implied average length (u); and count the number of inserts in the region (N)
+4. Compute the Z statistic: Z = (M-u)/(S/sqrt(N)) for each insert in the region. 
+5. Average all of the Z scores that each insert received. 
+6. Make a final pass, marking the inserts that have Z values less than -1*threshold as potential areas of deletion, and areas with Z values greater than threshold as potential insertions.
 
 
-## Strategies ##
-For these projects, students will **not** have to worry about writing the code to aligning the reads.  This is done for you by a very popular (and created at Maryland) tool called **Bowtie2** (http://bowtie-bio.sourceforge.net/bowtie2/index.shtml).
+### C/E Statistic Test Cases ###
+Each test case is available in a unique directory in the /testcases directory. Each test case can be run by the run_test.sh script in the directory
 
-The first thing ***everyone*** should do is complete the [Getting Started](http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml#getting-started-with-bowtie-2-lambda-phage-example) tutorial for Bowtie2.  This will teach you the basics of aligning sequences to a reference assembly and how to produce the SAM alignment file.
+Since the CE Statistic is so highly sensitive to user input, they have been considered with somewhat arbitrary parameters. The test cases look to see that the inserted error was found within a region equal to (c*|error length|, where c is user configured) of the error. Errors are defined to be Z values with greater magnitude than 1.5 
 
-*These projects rely on using existing tools!*  There are FASTA parsers for every programming language ([BioPython](http://biopython.org/wiki/Main_Page), [BioRuby](http://www.bioruby.org/), [C++](http://www.seqan.de/), [Java](http://biojava.org/wiki/Main_Page), [R](http://www.bioconductor.org/)).  Similarly, there are a lot SAM parsers out there: [SAMtools](http://samtools.sourceforge.net/).
+### C/E Statistic Test Description ###
 
-Below are few ideas to help you implement the test software.
+In the frist test case (tc_1): we generate a random sequence of length 100000 and mutate it at several positions
+ by deleting random sequences. We generate reads from the original sequence and align the reads with
+ the mutated sequence using bowtie. Finally, we use the Gaussian hypothesis to mark valid regions in
+ the genome. The oracle information is stored in 'oracle.txt' and the bad regions by the tool are 
+stored in 'match.txt', results obtained by comparing 'match.txt' and 'oracle.txt' are stored in 'result.txt'; the CE Statistic is run with the threshold set to 2.5.
 
-### Group 1: Read coverage ###
-* Run Bowtie2 using the sequences and assemblies to get the SAM file. 
-* Parse the SAM file (using one of the parsers) to find where each sequence aligns on the assembly.
-* Sort the alignments based on start position.
-* Go through the assembly a window at a time, and count the number of times a read covers that window (or base).
-* Print any windows that exceed the average coverage.
 
-### Group 2: Mate-pair size agreement ###
-* Run Bowtie2 using the sequences and assemblies (with mate-pair info) to get the SAM file.
-* Parse the SAM file and print out the insert size of the alignment (hint: it's a field in the SAM file).
-* If the insert size differs by a given number of standard deviation, print the reads. 
+In the second test case(tc_2) insertions are made in the genomic sequence; CE Statistic is run with the threshold set to 2.5.
 
-In order to get students started quickly, I will provide you with initial testcases (reads and assemblies).  Later in the project, students will need to construct their own testcases.
+It takes several minutes to run the CE Statistic Test Cases on a 1.3Ghz Processor. 
 
-[AMOSValidate](http://sourceforge.net/apps/mediawiki/amos/index.php?title=Amosvalidate) is software that does similar constraint checking and can be a great resource.
+## Gaussian Constraint ##
+### Algorithm ###
+The algorithm is is as follows:
+1) Given the reads, align the reads with the assembled genome using bowtie2
+2) Once alignment has been made, compute the global mean and the standard deviation
+3) Depending on the distance between paired ends in the sam file, the global mean and standard deviation, mark the region in the asssembly as potentially incorrect
 
-### Simulating reads ###
-*wgsim* is the tool I use to simulate reads. https://github.com/lh3/wgsim
+### Test Case Description for Gaussian ###
 
-Download it, and then run: ```gcc -g -O2 -Wall -o wgsim wgsim.c -lz -lm```
+In the first test case (tc_3), insertions are made in the genome sequence
 
-Next, you simply enter the reference fasta file you want to generate reads from:
-```wgsim [options] <in.ref.fa> <out.read1.fq> <out.read2.fq>```
+In the second test case (tc_4) deletions are made in the genome sequence
 
-It produces mate-pair files, but you're fine only using one of the two files.  If I wanted to create 10 reads (each mate of length 100) without any error, I'd enter:
-```wgsim -1 100 -2 100 -R 0.0 -X 0.0 -e 0.0 -N 10 influenza-output.fasta flu.1.fastq flu.2.fastq```
+In the third test case (tc_5) insertions and deletions both are made in the genome sequence
 
-Notice how the output reads are in the fastq format instead of fasta.  Depending on the assembler, you may need to convert to fasta.  Fastq is similar to fasta but contains additional info about the quality of each basepair.  You can use a tool like this http://hannonlab.cshl.edu/fastx_toolkit/download.html to convert them to fasta.  I perfer just running a shell script like:
-```awk 'NR % 4 == 1 || NR % 4 == 2' myfile.fastq | sed -e 's/@/>/' > myfile.fasta```
+In the fourth test case (tc_6) insertions and deletions both are made in a practical genome rhodobacter
 
-Below are read lengths typically produced by popular sequencing technologies.
+In all test cases, the genome size is 100000, read length is 40 and distance between paired ends is 200.
 
-| Technology     | Read length (avg) |
-|----------------|-------------------|
-| Illumina HiSeq | 100 bp            |
-| 454            | 400 bp            |
-| PacBio         | 1000 bp            |
+It takes a couple of seconds for the gaussian constraint to run for a genome sequence of size 100000 on a 1.3Ghz processor
 
-### Generating assemblies ###
-There are a collection of different assemblers students can use.  For a very detailed walkthrough, please check out the first part of the AMOS technical report (http://onlinelibrary.wiley.com/doi/10.1002/0471250953.bi1108s33/abstract) for instruction on the assembler Minimus.
+## Good-Minus-Bad Analysis ##
+### Algorithm ###
+The generic algorithm is as follows:
 
-Other popular assemblers include SGA (https://github.com/jts/sga), and SOAPdenovo (http://soap.genomics.org.cn/soapdenovo.html).
+1. Classify mate-pair reads as bad and good pairs
+2. Find the bad and good mate-pair reads covering a specific base-pair
+3. Compute score for that base pair
+4. Draw the score curve as a function of base pairs
+5. Low scored regions are indicators of misassembly
 
-I recommend that first students generate reads from a ```true''' assembly.  Then manually introduce errors (creating breakpoints, duplicating segments, etc.) into the assembly.  This will provide a way for users to evaluate how well their framework detects the errors.
+This generic algorithm contains vague statements. We fill the gaps in these statements by following heuristics and definition in Kim et al. [1]. First, we should define what it takes to be a bad or good mate-pair. We took two times the average mate-pair insert size as our threshold value. If mate-pair insert size above this threshold, we mark it as bad. Other mate-pairs marked as good.
 
-## Checkpoint 1
-Due date: **November 12th**
+Second, we determine a scoring fuction. Each base pair is scored by subtracting number of bad clones from number of good clones covering this specific base pair.
 
-By this date, each group should have a basic working implementation of their respective tool.  In addition, each group should have created and tested their tool on a collection of manually created test datasets.
+Finally, we take negative scored regions as low scored regions. That is, negative regions indicates misassembly.
 
-Requirements:
-* Working implementation with ```README``` file.  This ```README``` should describe how to use your tool and the output, specifically how you describe the misassemblies.
-* Small collection of testcases uploaded to ```testcases/*/``` with a README file in each directory explaining the goal of the testcase.  Each testcase should contain a FASTA file of the reads (```input.fasta``` or ```input_1.fasta``` and ```input_2.fasta``` for the mate-pair group), a FASTA file for the assembly (```assembly.fasta```), and a file containing the known misassemblies that you will compare your tool's output with (```oracle```).  
-* For now, include a ```run_test.sh``` script in each testcase directory that runs your tool and returns 0 if it finds all the misassemblies.
+### Test Cases for Good-minus-bad Analysis ###
+We use "lambda virus" genome in this test. The reference genome and reads used in this test is taken from Bowtie 2 tutorial. We created BAM file and its index by using combination of Bowtie 2 and samtools.
 
-Submit a pull request with the above requirements: https://github.com/cmhill/assembly-testing
+The fasta file for the genome contains only single reference and we created an artificial misassembly on the genome by inverting region(s) between base pair locations listed in the respective oracle file. 
 
-Currently, the ```run_test.sh``` in the root directory of the repository creates a jUnit XML file based on the testcase results.  It can be viewed here http://gandalf.cs.umd.edu:8080/job/Assembly%20testing/.  I'm currently working on a better plugin for viewing the testcase results.
+In the first test (tc_7), we do inversion on single long region (compared to tc_8), 2100 base pairs. Inverting only one region simplifies the test and doing inversion on a long region should increase chances for misassembly region detection. Both these properties are ideal for a starter feasibility test.
 
-## Coming Soon... 
-* Due dates.
+In the second test (tc_8), we do inversion on single long region (compared to tc_7), 700 base pairs. Doing inversion on shorter region tests the sensitivity of our analysis to the length of the region.
+
+In the third test (tc_9), we do inversion on multiple regions; more specifically, 3 regions. In other feasibility good-minus-bad analysis test cases (tc_7 and tc_8), we tested on a single region. By inverting multiple regions, we test whether having more than one inversion have negative effect on our analysis.
+
+## General Test Case ##
+The final test case (tc_10) contains all type of misassemblies that can be identified by the analysis we used. There is an inversion in the first reference between 1740th and 2280th base pair locations. Second reference has deletion of 240 base pairs at 780th base pair location whereas third reference contains insertion of 240 base pairs at 1020th base pair location. Our software is able to identify all these misassemblies. This case tests whether our software runs successfully with combination of misassembly types.
+
+## Output and Oracle Format ##
+We output 5 tab-seperated columns. First column will be the name of the reference where the misassembly occured. The second column will refer to leftmost basepair locations where the error began. In the output file, third column represents the non-inclusive location of the end of the errorneous region, while in the oracle information, the third column represents the size of the simulated error. Fourth column refers to type of the misassembly in this region. Fifth column holds the value for the confidence in that misassembly region finding. Last column is only meaningful for breakpoint analysis group. We fill this column regardless to be consistent with other groups. Fifth column does not appear in the oracle file. An example output for mate-pair analysis would look like below:
+```
+gi|9626243|ref|NC_001416.1|     19928   22086   inversion       None
+gi|9626243|ref|NC_001416.1|     37523   37628   insertion       None
+```
+
+We picked this format since it will allow us to easily merge misassembly regions from our different analysis tools. 
+
+## References ##
+1. Sun Kim, Li Liao, Michael P. Perry Shiping Zhang and Jean-Francois Tomb. A computational approach to sequence assembly validation

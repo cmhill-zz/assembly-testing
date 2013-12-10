@@ -4,9 +4,9 @@ timestamp=`date +%FT%R:%S`
 tests=0
 failures=0
 
-for tc in testcases/* ; do
+for tc in testcases/group_2/* ; do
     tc=`basename ${tc}`
-    sh ./testcases/${tc}/run_test.sh
+    (cd ./testcases/group_2/${tc} && sh run_test.sh)
     return_code=$?
 
     tests=$((tests + 1))
