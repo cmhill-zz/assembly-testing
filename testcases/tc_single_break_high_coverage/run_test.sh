@@ -1,5 +1,5 @@
 #Generate assembly on short original with one error (2000 out of 3000)
-python ../../errorgenerator/errorgen.py -a ../../data/buchnera/3000/buchnera-udp.assembly.fasta -o singleErrorAssembly.fasta -m singleErrorMetadata.txt -e 2000 -l 200
+python ../../errorgenerator/errorGen.py -a ../../data/buchnera/3000/buchnera-udp.assembly.fasta -o singleErrorAssembly.fasta -m singleErrorMetadata.txt -e 2000 -l 200
 
 #Generate 5x read coverage over error assembly
 wgsim -1 300 -2 300 -R 0.0 -X 0.0 -e 0.0 -N 100 singleErrorAssembly.fasta single.1.fastq single.2.fastq

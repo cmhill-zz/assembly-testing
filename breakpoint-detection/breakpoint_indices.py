@@ -84,7 +84,17 @@ def matchSingleton(singleton,assembly,alpha):
 		resultIndex = assembly.find(alphaString,currentStart,len(assembly))
 		if resultIndex != -1:
 			print 'Found match at position: '+str(resultIndex)
-			indices.append(resultIndex)
+			#now find where singleton stops matching assembly
+			curInd = resultIndex
+			for char in singleton:
+				if char == assembly[curInd]:
+					curInd+=1
+					print 'matches up to %d' % curInd
+				else:
+					print 'distance: %d' % (curInd - resultIndex)
+					break
+
+			indices.append(curInd)
 			currentStart=resultIndex+1
 
 	return indices
@@ -110,11 +120,13 @@ def naiveBreakpointDetect(singletons,assembly,alpha,outputFile=None):
 	if outputFile != None:
 		outputStream = open(outputFile,'w')
 
-		outputStream.write("Alpha = "+str(alpha)+"\n")
-		outputStream.write("Errors detected at:\n")
+		outputStream.write("ContigName\tStartError\tEndError\ttype\tconfidence\n")
+		
+		errorCount = 0
 		for i in range(len(matchArray)):
 			if matchArray[i] > 0:
-				outputStream.write("\t"+str(i)+"\t"+str(matchArray[i])+"\n")
+				outputStream.write("error_"+str(errorCount)+"\t"+str(i)+"\t"+str(i)+"\tbreak\t"+str(matchArray[i])+"\n")
+				errorCount+=1
 
 		outputStream.close()
 
@@ -179,11 +191,13 @@ def gaussianBreakpointDetect(singletons,assembly,alpha,n,sigma,outputFile=None):
 	if outputFile != None:
 		outputStream = open(outputFile,'w')
 
-		outputStream.write("Alpha = "+str(alpha)+"\n")
-		outputStream.write("Errors detected at:\n")
+		outputStream.write("ContigName\tStartError\tEndError\ttype\tconfidence\n")
+		
+		errorCount = 0
 		for i in range(len(matchArray)):
 			if matchArray[i] > 0:
-				outputStream.write("\t"+str(i)+"\t"+str(matchArray[i])+"\n")
+				outputStream.write("error_"+str(errorCount)+"\t"+str(i)+"\t"+str(i)+"\tbreak\t"+str(matchArray[i])+"\n")
+				errorCount+=1
 
 		outputStream.close()
 
@@ -234,9 +248,6 @@ def Main():
 	singletons = readSingletons(options.unaligned_file)
 
 	print 'Successfully read %d singletons' % len(singletons)
-
-	n = int(options.gauss_window)
-	sigma = float(options.sigma)
 	
 
 	#match singletons to assembly
@@ -250,8 +261,8 @@ def Main():
 			print 'Provide --sigma'
 			sys.exit()
 
-		print n
-		raw_input()
+		n = int(options.gauss_window)
+		sigma = float(options.sigma)
 
 		matchArray = gaussianBreakpointDetect(singletons,assemblyString,alpha,n,sigma,output_file)
 	else:

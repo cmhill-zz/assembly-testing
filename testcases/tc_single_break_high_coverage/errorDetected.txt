@@ -1,0 +1,2 @@
+ContigName	StartError	EndError	type	confidence
+error_0	1384	1384	break	6
