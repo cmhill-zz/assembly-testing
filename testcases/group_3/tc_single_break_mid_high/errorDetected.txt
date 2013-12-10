@@ -1,0 +1,2 @@
+ContigName	StartError	EndError	type	confidence
+error_0	2399	2399	break	6

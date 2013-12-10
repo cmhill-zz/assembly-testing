@@ -1,5 +1,3 @@
-#! /usr/bin/sh
-
 timestamp=`date +%FT%R:%S`
 tests=0
 failures=0

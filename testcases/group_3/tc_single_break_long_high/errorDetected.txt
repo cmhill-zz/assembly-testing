@@ -1,0 +1,3 @@
+ContigName	StartError	EndError	type	confidence
+error_0	156092	156092	break	1
+error_1	156263	156263	break	2

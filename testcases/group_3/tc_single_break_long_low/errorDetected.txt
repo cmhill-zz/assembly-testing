@@ -1,0 +1,2 @@
+ContigName	StartError	EndError	type	confidence
+error_0	432230	432230	break	1
