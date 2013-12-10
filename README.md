@@ -8,8 +8,9 @@ We have dependencies on following tools/packages:
 
 * python 2.7.3
 * numpy 1.7.1
-* biopython 1.62
+* Bowtie2 2.1.0
 * samtools 0.1.19
+* biopython 1.62
 * pysam 0.7.5
 
 ## Usage ##
@@ -86,7 +87,7 @@ The algorithm is is as follows:
 2) Once alignment has been made, compute the global mean and the standard deviation
 3) Depending on the distance between paired ends in the sam file, the global mean and standard deviation, mark the region in the asssembly as potentially incorrect
 
-### Test Case Description for gaussian ###
+### Test Case Description for Gaussian ###
 
 In the first test case (tc_3), insertions are made in the genome sequence
 
@@ -116,7 +117,7 @@ Second, we determine a scoring fuction. Each base pair is scored by subtracting 
 
 Finally, we take negative scored regions as low scored regions. That is, negative regions indicates misassembly.
 
-### Test cases ###
+### Test Cases for Good-minus-bad Analysis ###
 We use "lambda virus" genome in this test. The reference genome and reads used in this test is taken from Bowtie 2 tutorial. We created BAM file and its index by using combination of Bowtie 2 and samtools.
 
 The fasta file for the genome contains only single reference and we created an artificial misassembly on the genome by inverting region(s) between base pair locations listed in the respective oracle file. 
@@ -127,13 +128,14 @@ In the second test (tc_8), we do inversion on single long region (compared to tc
 
 In the third test (tc_9), we do inversion on multiple regions; more specifically, 3 regions. In other feasibility good-minus-bad analysis test cases (tc_7 and tc_8), we tested on a single region. By inverting multiple regions, we test whether having more than one inversion have negative effect on our analysis.
 
+## General Test Case ##
+The final test case (tc_10) contains all type of misassemblies that can be identified by the analysis we used. There is an inversion in the first reference between 1740th and 2280th base pair locations. Second reference has deletion of 240 base pairs at 780th base pair location whereas third reference contains insertion of 240 base pairs at 1020th base pair location. Our software is able to identify all these misassemblies. We wanted to see whether our software runs successfully with combination of misassembly types.
+
 ## Output and Oracle Format ##
-We output 5 tab-seperated columns. First column will be the name of the reference where the misassembly occured. The second column will refer to leftmost basepair locations where the error began. In the output file, third column represents the non-inclusive location of the end of the errorneous region, while in the oracle information, the third column represents the size of the simulated error. Fourth column refers to type of the misassembly in this region. Fifth column holds the value for the confidence in that misassembly region finding. Last column is only meaningful for breakpoint analysis group. We fill this column regardless to be consistent with other groups. An example output for mate-pair analysis would look like below:
+We output 5 tab-seperated columns. First column will be the name of the reference where the misassembly occured. The second column will refer to leftmost basepair locations where the error began. In the output file, third column represents the non-inclusive location of the end of the errorneous region, while in the oracle information, the third column represents the size of the simulated error. Fourth column refers to type of the misassembly in this region. Fifth column holds the value for the confidence in that misassembly region finding. Last column is only meaningful for breakpoint analysis group. We fill this column regardless to be consistent with other groups. Fifth column does not appear in the oracle file. An example output for mate-pair analysis would look like below:
 ```
 gi|9626243|ref|NC_001416.1|     19928   22086   inversion       None
-gi|9626243|ref|NC_001416.1|     36121   36279   inversion       None
-gi|9626243|ref|NC_001416.1|     37523   37628   inversion       None
-gi|9626243|ref|NC_001416.1|     37630   37632   inversion       None
+gi|9626243|ref|NC_001416.1|     37523   37628   insertion       None
 ```
 
 We picked this format since it will allow us to easily merge misassembly regions from our different analysis tools. 
