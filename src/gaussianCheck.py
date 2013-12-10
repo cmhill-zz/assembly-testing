@@ -131,14 +131,14 @@ def gCk(samLocation, multiplier):
         for intervals in badDeleteInterval[contigs]:
 #            out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\td\n')
 #            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tdeletion, found by mate pair (distance) ' + str(intervals[1] - intervals[0])+ '\tNIL\n')
-            misassemblyRegions.append(mr.MisassemblyRegion(contigs, int(intervals[0]), int(intervals[1]), "deletion", "NIL"))
+            misassemblyRegions.append(mr.MisassemblyRegion(contigs, int(intervals[0]), int(intervals[1]), "deletion", None))
 
 
     for contigs in badInsertInterval.keys():
         for intervals in badInsertInterval[contigs]:
 #            out.write(str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\ti\n')
 #            print(contigs + '\t' + str(int(intervals[0])) + '\t' + str(int(intervals[1])) + '\tinsertion, found by mate pair (distance) ' + str(intervals[1] - intervals[0]) + '\tNIL')
-            misassemblyRegions.append(mr.MisassemblyRegion(contigs, int(intervals[0]), int(intervals[1]), "insertion", "NIL"))
+            misassemblyRegions.append(mr.MisassemblyRegion(contigs, int(intervals[0]), int(intervals[1]), "insertion", None))
 
 
     return misassemblyRegions
