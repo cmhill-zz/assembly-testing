@@ -120,7 +120,6 @@ def naiveBreakpointDetect(singletons,assembly,alpha,outputFile=None):
 	if outputFile != None:
 		outputStream = open(outputFile,'w')
 
-		outputStream.write("ContigName\tStartError\tEndError\ttype\tconfidence\n")
 		
 		errorCount = 0
 		for i in range(len(matchArray)):
