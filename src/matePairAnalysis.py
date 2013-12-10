@@ -6,10 +6,10 @@ import os
 import time
 
 def createSAM(fastaFileName, reads1, reads2, baseName, samFileName):
-    os.system("bowtie2-build %s %s &> /dev/null" % (fastaFileName, baseName))
+    os.system("bowtie2-build %s %s &> /dev/null " % (fastaFileName, baseName))
     if samFileName.endswith(".sam"):
         if reads1.endswith(".fasta"):
-            os.system("bowtie2 -f -x %s -1 %s -2 %s -S %s &> /dev/null" % (baseName, reads1, reads2, samFileName))
+            os.system("bowtie2 -f -x %s -1 %s -2 %s -S %s &> /dev/null " % (baseName, reads1, reads2, samFileName))
         else:
             os.system("bowtie2 -x %s -1 %s -2 %s -S %s &> /dev/null" % (baseName, reads1, reads2, samFileName))
     else:
@@ -60,7 +60,7 @@ parser.add_argument("--gau", dest="gau", action="store_true", help="if present, 
 parser.add_argument("--gau_multiplier", dest="multiplier", default=4, type=int, help="this is used in gau analysis. it changes the window in which the next mate pair should be found. Default is 4")
 parser.add_argument("--ce_windowsize", dest="windowSize", default=150, type=int, help="This is used in CE Statistic; controls the window size for the moving window average. Default is 150")
 parser.add_argument("--ce_windowstep", dest="windowStep", default=100, type=int, help="this is used in CE Statistic; controls the window step size for the moving window average. Default is 100")
-parser.add_argument("--ce_threshold", dest="threshold", default=1.2, type=float, help="this is used in CE Statistic; controls the theshold for marking regions as bad. Default is 1.2")
+parser.add_argument("--ce_threshold", dest="threshold", default=2.5, type=float, help="this is used in CE Statistic; controls the theshold for marking regions as bad. Default is 2.5")
 
 args = parser.parse_args()
 

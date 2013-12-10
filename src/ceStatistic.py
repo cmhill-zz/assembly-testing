@@ -31,9 +31,13 @@ class CEStatistic:
         assert(self.fInput)
 
         #scrap the headers
-        for x in range(0, 3):
-            self.fInput.readline()
-        
+#        for x in range(0, 3):
+ #           self.fInput.readline()
+        line = self.fInput.readline()
+        data = line.split('\t')
+        while(len(data) < 9):
+            line = self.fInput.readline()
+            data = line.split('\t')
 
         for line in self.fInput:
             if self.count % 2 == 0:
