@@ -4,7 +4,7 @@
 Design software to determine whether an assembly satisfies a set of mate-pair constraints.
 
 ## Dependencies ##
-We have dependencies on following tools/packages:
+You should install our dependencies to be able to run our software. We have dependencies on the following tools/packages:
 
 * python 2.7.3
 * numpy 1.7.1
@@ -25,7 +25,8 @@ usage: matePairAnalysis.py [-h] --fasta FASTAFILENAME -1 READFILE1 -2
 
 Software to find misassemblies by doing mate-pair analysis. If any of the
 analysis flag is provided, only those analysis will be executed. Otherwise,
-all of the analysis will be executed.
+all of the analysis will be executed. Our software writes its findings to
+standard output.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -33,9 +34,9 @@ optional arguments:
                         fasta file name holding genome reference sequences
   -1 READFILE1          first part of the mate-pair reads
   -2 READFILE2          second part of the mate-pair reads
-  --gmb                 if present, do only good minus bad analysis.
-  --ce                  if present, do only ce Statistic
-  --gau                 if present, do only gaussian analysis
+  --gmb                 if present, do good minus bad analysis.
+  --ce                  if present, do ce Statistic
+  --gau                 if present, do gaussian analysis
   --gau_multiplier MULTIPLIER
                         this is used in gau analysis. it changes the window in
                         which the next mate pair should be found. Default is 4

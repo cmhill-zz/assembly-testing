@@ -50,13 +50,14 @@ def createRandomNamesDict():
 
 parser = argparse.ArgumentParser(description="Software to find misassemblies by doing mate-pair analysis." +
                                  " If any of the analysis flag is provided, only those analysis will be executed." +
-                                 " Otherwise, all of the analysis will be executed.")
+                                 " Otherwise, all of the analysis will be executed."
+                                 " Our software writes its findings to standard output.")
 parser.add_argument("--fasta", dest="fastaFileName", required=True, help="fasta file name holding genome reference sequences")
 parser.add_argument("-1", dest="readFile1", required=True, help="first part of the mate-pair reads")
 parser.add_argument("-2", dest="readFile2", required=True, help="second part of the mate-pair reads")
-parser.add_argument("--gmb", dest="gmb", action="store_true", help="if present, do only good minus bad analysis.")
-parser.add_argument("--ce", dest="ce", action="store_true", help="if present, do only ce Statistic")
-parser.add_argument("--gau", dest="gau", action="store_true", help="if present, do only gaussian analysis")
+parser.add_argument("--gmb", dest="gmb", action="store_true", help="if present, do good minus bad analysis.")
+parser.add_argument("--ce", dest="ce", action="store_true", help="if present, do ce Statistic")
+parser.add_argument("--gau", dest="gau", action="store_true", help="if present, do gaussian analysis")
 parser.add_argument("--gau_multiplier", dest="multiplier", default=4, type=int, help="this is used in gau analysis. it changes the window in which the next mate pair should be found. Default is 4")
 parser.add_argument("--ce_windowsize", dest="windowSize", default=150, type=int, help="This is used in CE Statistic; controls the window size for the moving window average. Default is 150")
 parser.add_argument("--ce_windowstep", dest="windowStep", default=100, type=int, help="this is used in CE Statistic; controls the window step size for the moving window average. Default is 100")
@@ -80,6 +81,9 @@ if not (args.gmb or args.gau or args.ce):
     args.gmb = True
     args.gau = True
     args.ce = True
+
+if not os.path.exists(randomNamesDict["sortedBamFileName"]):
+    args.gmb = False
 
 misassemblyRegionList = []
 if args.gmb:
