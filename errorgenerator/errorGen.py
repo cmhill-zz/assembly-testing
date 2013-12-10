@@ -9,6 +9,7 @@ class AssemblyMesser(object):
         self.options = options
         self.header = ""
         self.errorPoints = []
+        self.errorEndPoints = []
         self.bad_data = ""
         
     def setHeader(self,header):
@@ -30,6 +31,12 @@ class AssemblyMesser(object):
     
     def getBadData(self):
         return self.bad_data
+
+    def addErrorEndPoint(self,ep):
+        self.errorEndPoints.append(ep)
+
+    def getErrorEndPoint(self,i):
+        return self.errorEndPoints[i]
     
         
 #reads an assembly from a FASTA file as one contiguous string. Returns said string.
@@ -61,8 +68,19 @@ def errorWrite(messer):
     	outputFile.write(messer.getBadData()+"\n")
 
     with open (options.metadata_file, "w") as metaDataFile:
-    	metaDataFile.write(str(messer.getErrorPoints()))		
+        header = messer.getHeader()
+        curIter = 0
+        for point in messer.getErrorPoints():
+            endpoint = messer.getErrorEndPoint(curIter)
+            printDebug(point)
+            metaDataFile.write("%s\t%d\t%d\t%d\t%s\n" %(header,point,endpoint,100,"break"))
+            curIter+= 1
+	
     
+def printDebug(myst):
+    print "="*79
+    print myst
+    print "-"*80
 
 def errorDo(messer):
     
@@ -104,6 +122,7 @@ def errorDo(messer):
         if (errorCode == 1):
             print 'Seeding inversion error at position '+str(i)
             errorString = errorString[:i] + errorString[i:i+errorLength][::-1] + errorString[i+errorLength:]
+            messer.addErrorEndPoint(i+errorLength)
 
         if(errorCode == 2):
             print 'Seeding rearrangement error at position '+str(i)
@@ -118,6 +137,7 @@ def errorDo(messer):
 
             errorString = errorString[:i]+str2+errorString[i+errorLength:]
             errorString = errorString[:exchangePoint]+str1+errorString[exchangePoint+errorLength:]
+            messer.addErrorEndPoint(i+errorLength)
 
 
     messer.setErrorPoints(errorStartPoints)
