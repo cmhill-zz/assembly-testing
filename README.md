@@ -49,7 +49,7 @@ optional arguments:
                         for marking regions as bad. Default is 2.5
 ```
 
-## CE Statistic ##
+## C/E Statistic ##
 ### Algorithm ###
 The algorithm is as follows:
 
