@@ -4,12 +4,15 @@ import argparse
 import misassemblyRegion as mr
 
 # Form misassembly region list from the contents of a file
-def getmrlist(fname):
+def getmrlist(fname, type):
     mrlist = []
     with open(fname, "r") as f:
         for line in f:
             els = line.strip().split()
-            mrlist.append(mr.MisassemblyRegion(els[0], int(els[1]), int(els[2]), els[3],None))
+            if type == "result":
+                mrlist.append(mr.MisassemblyRegion(els[0], int(els[1]), int(els[2]), els[3],None))
+            elif type == "oracle":
+                mrlist.append(mr.MisassemblyRegion(els[0], int(els[1]), int(els[1]) + int(els[2]), els[3], None))
     return mrlist
 
 # Check if misassembly regions are equivalent
@@ -34,8 +37,8 @@ parser.add_argument("--oracle", dest="oracleFile", required=True, type=str, help
 parser.add_argument("--result", dest="resultFile", required=True, type=str, help="file contains resultant misassembly regions of good-minus-bad analysis")
 args = parser.parse_args()
 
-resultmrlist = getmrlist(args.resultFile)
-oraclemrlist = getmrlist(args.oracleFile)
+resultmrlist = getmrlist(args.resultFile, "result")
+oraclemrlist = getmrlist(args.oracleFile, "oracle")
 
 # For each oracle misassembly regions check if there exists an equivalent misassembly region in resultant file
 for oraclemr in oraclemrlist:
