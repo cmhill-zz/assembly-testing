@@ -1,0 +1,15 @@
+error_0	364	364	break	1
+error_1	1175	1175	break	1
+error_2	1675	1675	break	1
+error_3	1999	1999	break	1
+error_4	2224	2224	break	1
+error_5	2424	2424	break	2
+error_6	2633	2633	break	1
+error_7	3216	3216	break	2
+error_8	3582	3582	break	1
+error_9	3880	3880	break	1
+error_10	4163	4163	break	1
+error_11	4385	4385	break	1
+error_12	4668	4668	break	1
+error_13	5090	5090	break	5
+error_14	6014	6014	break	1
