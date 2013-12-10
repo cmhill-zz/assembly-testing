@@ -54,6 +54,9 @@ def main():
 
     if totalErrors == 0:
         print 'There were zero errors to find.'
+        outFile = open("success","w")
+        outFile.write("yay")
+        outFile.close()
         sys.exit()
 
     #check: for each error, is there a predicted error which is within 10 base pairs
@@ -70,6 +73,9 @@ def main():
 
     if float(float(foundErrors)/float(totalErrors)) > .2:
         print 'Found more than 20 percent of the errors!'
+        outFile = open("success","w")
+        outFile.write("yay")
+        outFile.close()
     else:
         print 'Failed to find more than 20 percent of the errors.'
 

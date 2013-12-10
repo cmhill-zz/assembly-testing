@@ -1,3 +1,6 @@
+rm -f errorDetected.txt
+rm -f success
+
 #Generate assembly on short original with one error (2000 out of 3000)
 python ../../../errorgenerator/errorGen.py -a ../../../data/buchnera/3000/buchnera-udp.assembly.fasta -o assembly.fasta -m oracle -e 2000 -l 200
 
@@ -17,8 +20,22 @@ python ../../../breakpoint-detection/generate_unaligned.py  ../../../data/buchne
 #attempt to align 
 python ../../../breakpoint-detection/breakpoint_indices.py -a ../../../data/buchnera/3000/buchnera-udp.assembly.fasta -u singleUnaligned.txt -o errorDetected.txt --alpha 20 --algorithm naive
 
+
+if [ ! -f "errorDetected.txt" ]
+then
+    echo "No errors found"
+    exit 1
+fi
+
 #run verifier
 python ../../../verifier/verifier.py -o oracle -r errorDetected.txt
+
+
+if [ ! -f "success" ]
+then
+    echo "No errors found"
+    exit 1
+fi
 
 rm -f singleUnaligned.txt
 rm -f singleErrorAssembly.fasta
