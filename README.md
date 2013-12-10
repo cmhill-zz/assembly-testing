@@ -121,11 +121,11 @@ We use "lambda virus" genome in this test. The reference genome and reads used i
 
 The fasta file for the genome contains only single reference and we created an artificial misassembly on the genome by inverting region(s) between base pair locations listed in the respective oracle file. 
 
-In the first test (tc_7), we do inversion on single long region (compared to tc_gmb_2), 2100 base pairs. Inverting only one region simplifies the test and doing inversion on a long region should increase chances for misassembly region detection. Both these properties are ideal for a starter feasibility test.
+In the first test (tc_7), we do inversion on single long region (compared to tc_8), 2100 base pairs. Inverting only one region simplifies the test and doing inversion on a long region should increase chances for misassembly region detection. Both these properties are ideal for a starter feasibility test.
 
-In the second test (tc_8), we do inversion on single long region (compared to tc_gmb_1), 700 base pairs. Doing inversion on shorter region tests the sensitivity of our analysis to the length of the region.
+In the second test (tc_8), we do inversion on single long region (compared to tc_7), 700 base pairs. Doing inversion on shorter region tests the sensitivity of our analysis to the length of the region.
 
-In the third test (tc_9), we do inversion on multiple regions; more specifically, 3 regions. In other feasibility good-minus-bad analysis test cases (tc_gmb_1 and tc_gmb_2), we tested on a single region. By inverting multiple regions, we test whether having more than one inversion have negative effect on our analysis.
+In the third test (tc_9), we do inversion on multiple regions; more specifically, 3 regions. In other feasibility good-minus-bad analysis test cases (tc_7 and tc_8), we tested on a single region. By inverting multiple regions, we test whether having more than one inversion have negative effect on our analysis.
 
 ## Output and Oracle Format ##
 We are considering to output 5 tab-seperated columns. First column will be the name of the reference where the misassembly occured. Second and third column will refer to leftmost and rightmost base pair locations, respectively. Note that second column is inclusive whereas third column is exclusive. Fourth column refers to type of the misassembly in this region. Fifth column holds the value for the confidence in that misassembly region finding. Last column is only meaningful for breakpoint analysis group. We fill this column regardless to be consistent with other groups. An example output for mate-pair analysis would look like below:
