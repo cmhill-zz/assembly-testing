@@ -1,0 +1,8 @@
+>1
+ACGGA
+>2
+ACCCBDERSD
+ZCVDFGDFGT
+>non_numerical_id
+>10
+ababababab

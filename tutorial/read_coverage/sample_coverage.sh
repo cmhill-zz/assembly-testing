@@ -1,4 +1,4 @@
-#! /usr/bin/bash
+#!/bin/bash
 
 # First build the index that bowtie2 will use the align the reads.
 bowtie2-build ../../data/influenza-A/influenza-A.assembly.fasta influenza-A.bt2

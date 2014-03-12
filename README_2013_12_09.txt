@@ -1,0 +1,95 @@
+##############
+Implementation
+##############
+
+---------------------
+Algorithm description
+----------------------
+
+- Two algorithms are used by the tool: A mean-and-standard deviation-based approach(we construct a threshold as the mean plus
+or minus a constant times the standard deviation, where the constant is a parameter) and a percentile method. Portions of the
+assembly with coverage that are either above or below the threshold, or that lie within a particular percentile are flagged as 
+misassemblies. 
+
+- Tuneable parameters of our algorithms include the window length and step size. Note that bucketing is a special case of
+a windowed approach, where the step size equals the window length.
+
+---------------------
+Description of output
+---------------------
+
+- The tool produces output in five formats:
+	(a) At the base-pair level, it outputs an assembly-length binary vector where each element indicates whether the corresponding base-pair is part of a repeat or not
+	(b) At the window level, it outputs the same vector, but at a windowed level.
+	(c) At the region level, it provides a textual output, which gives the exact regions of the repeats.
+	(d) Various graphical representations of coverage, overcovered and undercovered regions in the form of 2D GnuPlot plots.
+	(e) The tool adheres to the output format agreed upon with the other CompBio teams, by outputting the oracle file in a tab-separated
+		CSV format. The following are descriptions of the columns used:
+
+		(1) CONTIG_ID (Integer): ID of the contig, as suggested by the assembly FASTA file.
+		(2) STARTING_MISASSEMBLY_INDEX: Index of the basepair that begins a misassembled region.
+		(3) ENDING_MISASSEMBLY_INDEX: Index of the basepair that ends a misassembled region.
+		(4) TYPE_OF_MISASSEMBLY (String): "Under-coverage" or "over-coverage".
+		(5) CONFIDENCE (float between 0 and 1): Our team does not use this field (it is only used by the 3rd CompBio group).
+	
+	
+- The formats (a) and (b) were chosen because they are easy to compare against oracles and (c), (d) are easy for humans to digest. Format (e)
+was suggested by the course instructor and TA and agreed upon with the other CompBio teams. In conjunction with (d), it provides a human-digestible
+format for understanding what regions are misassembled.
+
+###################
+How to run the tool
+###################
+
+An example run of the tool is the following: First, change to the directory "assembly-read-coverage/org/umd/assemblytest/readcoverage/". Then,
+run 
+
+python clipper.py -a ../../../../../data/influenza-A/influenza-A.assembly.fasta -r ../../../../../data/influenza-A/influenza-A.sequences.fasta -w 20 -s 1 -t Gaussian -p 2.0 
+
+This will read the influenza-A assembly and sequences FASTA files, print some useful statistics and generate some intermediate files in the directory 
+"assembly-read-coverage/org/umd/assemblytest/readcoverage/out".  For more information, consult the output of python clipper.py -h:
+
+usage: clipper.py [-h] -a ASSEMBLY_FASTA -r READS_FASTA [-w WIN_LEN]
+                  [-s WIN_STEP] -t TEST_TYPE -p TEST_PARAM [-o OUT_DIR]
+
+Detects assembly regions of extreme coverage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ASSEMBLY_FASTA, --assembly ASSEMBLY_FASTA
+                        Assembly file in FASTA format
+  -r READS_FASTA, --reads READS_FASTA
+                        Read sequences file in FASTA format
+  -w WIN_LEN, --window_length WIN_LEN
+                        Sliding window length (integer)
+  -s WIN_STEP, --window_slide_step WIN_STEP
+                        Window sliding step (integer)
+  -t TEST_TYPE, --test_type TEST_TYPE
+                        Statistical test type used to determine extreme
+                        coverage; can be either Gaussian or Percentile
+  -p TEST_PARAM, --test_param TEST_PARAM
+                        Statistical test parameter (float)
+  -o OUT_DIR, --output_dir OUT_DIR
+                        Output file directory
+
+						
+#########
+Testcases
+#########
+
+- We include a README file with descriptions for every testcase in the path testcases/group_1/README.txt. Refer to that file
+for details about the different testcases and how they relate to one another. 
+	
+##############
+Directory refs
+##############
+
+- Assembly and sequences FASTA files for the Influenza-A virus can be found at data/influenza-A.
+- Assembly and sequences FASTA files, as well as oracle files that we generated can be found at 
+  "assembly-read-coverage-test/test/org/umd/assemblytest/readcoverage/testcases/"
+		
+#################
+Code dependencies
+#################
+
+- To run the tool, you will need bowtie2 (http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) and Python >= 2.7 with NumPy and matplotlib.
